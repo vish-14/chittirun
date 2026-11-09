@@ -202,6 +202,7 @@ export class RunSim {
     this.rng = new Rng(options.seed);
     this.chapter = options.chapterId ? CHAPTERS.find((c) => c.id === options.chapterId) : undefined;
     this.gov = new Governance(this.chapter?.startPower, this.chapter?.startApproval);
+    this.lastStage = this.gov.stage;
     this.speed = this.level.baseSpeed;
     this.missionTimer = options.firstMissionDelay ?? 6;
     this.bossTimer = this.level.boss.firstAt;
@@ -299,8 +300,15 @@ export class RunSim {
     this.events.push(e);
   }
 
-  private onStage(ch: StageChange | null) {
-    if (ch) this.emit({ type: "stageChange", from: ch.from, to: ch.to });
+  private lastStage: GovernanceStage = "control";
+
+  /** Emit a stage change whenever the governance stage differs from the last one we announced. */
+  private onStage(_ch?: StageChange | null) {
+    const now = this.gov.stage;
+    if (now !== this.lastStage) {
+      this.emit({ type: "stageChange", from: this.lastStage, to: now });
+      this.lastStage = now;
+    }
   }
 
   private end(reason: EndReason) {
@@ -339,7 +347,8 @@ export class RunSim {
     if (this.phase !== "running") return;
 
     // governance drift
-    this.onStage(this.gov.tick(dt, !!this.fc || !!this.pendingFc));
+    this.gov.tick(dt, !!this.fc || !!this.pendingFc);
+    this.onStage();
     this.checkGovernanceThresholds();
     if (this.phase !== "running") return;
 
