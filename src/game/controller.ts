@@ -57,6 +57,11 @@ export class GameController {
     this.sim = new RunSim(opts);
   }
 
+  /** Attract/demo mode: the autopilot plays. */
+  enableDemo() {
+    this.demo = true;
+  }
+
   get level(): LevelId {
     return this.sim.level.id;
   }

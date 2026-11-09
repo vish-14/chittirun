@@ -16,15 +16,15 @@ const BOARDS = [
 export default function Leaderboard({ onBack }: { onBack: () => void }) {
   const p = useProfile();
   const [board, setBoard] = useState(BOARDS[1].id);
-  const [rows, setRows] = useState<BoardEntry[] | null | "loading">("loading");
+  const [loaded, setLoaded] = useState<{ board: string; rows: BoardEntry[] | null } | null>(null);
   useEffect(() => {
     let live = true;
-    setRows("loading");
-    void fetchLeaderboard(board).then((r) => live && setRows(r));
+    void fetchLeaderboard(board).then((r) => live && setLoaded({ board, rows: r }));
     return () => {
       live = false;
     };
   }, [board]);
+  const rows: BoardEntry[] | null | "loading" = loaded && loaded.board === board ? loaded.rows : "loading";
   return (
     <ScreenShell title="Leaderboard" onBack={onBack}>
       <label className="block">

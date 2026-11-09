@@ -1,0 +1,217 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  CHITTI NAIDU RUN – serverless backend & asset CDN for one stage (staging or production).
+  Pay-per-request only: DynamoDB on-demand, S3, CloudFront. No always-on compute.
+  DEPLOY ONLY AFTER COST APPROVAL (see docs/AWS_DEPLOYMENT.md).
+
+Parameters:
+  Stage:
+    Type: String
+    AllowedValues: [staging, production]
+  AlertEmail:
+    Type: String
+    Description: Email for budget and alarm notifications
+  MonthlyBudgetUSD:
+    Type: Number
+    Default: 10
+
+Conditions:
+  IsProd: !Equals [!Ref Stage, production]
+
+Resources:
+  # ───────────── data ─────────────
+  GameTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub chitti-run-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: PK, AttributeType: S }
+        - { AttributeName: SK, AttributeType: S }
+      KeySchema:
+        - { AttributeName: PK, KeyType: HASH }
+        - { AttributeName: SK, KeyType: RANGE }
+      TimeToLiveSpecification: { AttributeName: expiresAt, Enabled: true }
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: !If [IsProd, true, false] }
+      SSESpecification: { SSEEnabled: true }
+      Tags: [{ Key: app, Value: chitti-run }, { Key: stage, Value: !Ref Stage }]
+
+  # ───────────── assets: private S3 + CloudFront (OAC) ─────────────
+  AssetBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub chitti-run-assets-${Stage}-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: [{ ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 } }]
+      LifecycleConfiguration:
+        Rules:
+          - { Id: expire-old-versions, Status: Enabled, NoncurrentVersionExpiration: { NoncurrentDays: 30 } }
+      VersioningConfiguration: { Status: Enabled }
+      Tags: [{ Key: app, Value: chitti-run }, { Key: stage, Value: !Ref Stage }]
+
+  AssetOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub chitti-run-assets-${Stage}
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  AssetHeaders:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: !Sub chitti-run-assets-${Stage}
+        CorsConfig:
+          AccessControlAllowCredentials: false
+          AccessControlAllowHeaders: { Items: ["*"] }
+          AccessControlAllowMethods: { Items: [GET, HEAD] }
+          AccessControlAllowOrigins: { Items: ["*"] }
+          OriginOverride: true
+        SecurityHeadersConfig:
+          ContentTypeOptions: { Override: true }
+          StrictTransportSecurity: { AccessControlMaxAgeSec: 63072000, IncludeSubdomains: true, Override: true }
+
+  AssetCDN:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub chitti-run assets ${Stage}
+        HttpVersion: http2and3
+        PriceClass: PriceClass_200 # includes India edge locations, excludes the priciest regions
+        Origins:
+          - Id: s3-assets
+            DomainName: !GetAtt AssetBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt AssetOAC.Id
+            S3OriginConfig: { OriginAccessIdentity: "" }
+        DefaultCacheBehavior:
+          TargetOriginId: s3-assets
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # Managed-CachingOptimized
+          ResponseHeadersPolicyId: !Ref AssetHeaders
+          AllowedMethods: [GET, HEAD]
+
+  AssetBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AssetBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub ${AssetBucket.Arn}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${AssetCDN}
+
+  # ───────────── least-privilege role for Amplify SSR compute ─────────────
+  ComputeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub chitti-run-compute-${Stage}
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: { Service: amplify.amazonaws.com }
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: game-table
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: [dynamodb:PutItem, dynamodb:Query, dynamodb:GetItem]
+                Resource: !GetAtt GameTable.Arn
+              - Effect: Allow
+                Action: [ssm:GetParameter]
+                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/chitti-run/${Stage}/*
+
+  # ───────────── monitoring & cost control ─────────────
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub chitti-run-alerts-${Stage}
+      Subscription: [{ Endpoint: !Ref AlertEmail, Protocol: email }]
+
+  DynamoThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub chitti-run-${Stage}-ddb-throttles
+      Namespace: AWS/DynamoDB
+      MetricName: ThrottledRequests
+      Dimensions: [{ Name: TableName, Value: !Ref GameTable }]
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  DynamoWriteSpikeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub chitti-run-${Stage}-ddb-write-spike
+      AlarmDescription: Unusual write volume (possible abuse) – check WAF / rate limits
+      Namespace: AWS/DynamoDB
+      MetricName: ConsumedWriteCapacityUnits
+      Dimensions: [{ Name: TableName, Value: !Ref GameTable }]
+      Statistic: Sum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 200000
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  CdnErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub chitti-run-${Stage}-cdn-5xx
+      Namespace: AWS/CloudFront
+      MetricName: 5xxErrorRate
+      Dimensions:
+        - { Name: DistributionId, Value: !Ref AssetCDN }
+        - { Name: Region, Value: Global }
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  MonthlyBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: !Sub chitti-run-${Stage}-monthly
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit: { Amount: !Ref MonthlyBudgetUSD, Unit: USD }
+        CostFilters: { TagKeyValue: ["user:app$chitti-run"] }
+      NotificationsWithSubscribers:
+        - Notification: { NotificationType: ACTUAL, ComparisonOperator: GREATER_THAN, Threshold: 50 }
+          Subscribers: [{ SubscriptionType: EMAIL, Address: !Ref AlertEmail }]
+        - Notification: { NotificationType: ACTUAL, ComparisonOperator: GREATER_THAN, Threshold: 80 }
+          Subscribers: [{ SubscriptionType: EMAIL, Address: !Ref AlertEmail }]
+        - Notification: { NotificationType: FORECASTED, ComparisonOperator: GREATER_THAN, Threshold: 100 }
+          Subscribers: [{ SubscriptionType: EMAIL, Address: !Ref AlertEmail }]
+
+Outputs:
+  TableName: { Value: !Ref GameTable }
+  AssetBucketName: { Value: !Ref AssetBucket }
+  AssetCdnDomain: { Value: !GetAtt AssetCDN.DomainName, Description: Use as NEXT_PUBLIC_ASSET_BASE_URL (https://...) }
+  AssetCdnId: { Value: !Ref AssetCDN }
+  ComputeRoleArn: { Value: !GetAtt ComputeRole.Arn, Description: Attach as the Amplify app's SSR compute role }
+  AlertTopicArn: { Value: !Ref AlertTopic }

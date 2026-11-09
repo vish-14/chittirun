@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { dailyChallengeFor, utcDateKey } from "@/game/logic/daily";
 import { getLevel } from "@/game/logic/levels";
 import type { LevelId } from "@/game/logic/types";
@@ -7,14 +8,15 @@ import { BgPreview, Button, Panel, ScreenShell } from "../ui";
 
 export default function Daily({ onBack, onPlay }: { onBack: () => void; onPlay: (l: LevelId, date: string) => void }) {
   const p = useProfile();
-  const date = utcDateKey();
+  const [now] = useState(() => Date.now());
+  const date = utcDateKey(new Date(now));
   const d = dailyChallengeFor(date);
   const best = p.daily[date] ?? 0;
   const lvl = getLevel(d.level);
   const streak = (() => {
     let n = 0;
     for (let i = 0; i < 30; i++) {
-      const k = utcDateKey(new Date(Date.now() - i * 86400000));
+      const k = utcDateKey(new Date(now - i * 86400000));
       if ((p.daily[k] ?? 0) > 0) n++;
       else if (i > 0) break;
     }

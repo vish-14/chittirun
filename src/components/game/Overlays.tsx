@@ -150,8 +150,8 @@ export function Toasts({ toasts }: { toasts: Toast[] }) {
 export function CrisisWarning({ stage }: { stage: GovernanceStage }) {
   const info = STAGE_INFO[stage];
   return (
-    <div className="animate-slide-down pointer-events-none absolute inset-x-0 top-0 z-20" role="alert" data-testid="crisis-warning">
-      <div className="mx-2 mt-28 rounded-md border-4 border-black px-3 py-2 text-center text-ink shadow-[0_4px_0_#000]" style={{ background: info.color }}>
+    <div className="animate-rise pointer-events-none absolute inset-x-0 bottom-24 z-20" role="alert" data-testid="crisis-warning">
+      <div className="mx-2 rounded-md border-4 border-black px-3 py-2 text-center text-ink shadow-[0_4px_0_#000]" style={{ background: info.color }}>
         <div className="font-pixel text-lg font-black uppercase">⚠ {info.label}</div>
         <div className="text-xs font-bold">{info.blurb}</div>
       </div>

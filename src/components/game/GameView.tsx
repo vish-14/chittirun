@@ -34,7 +34,8 @@ export default function GameView({
   const profile = useProfile();
   const hostRef = useRef<HTMLDivElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
-  const ctrlRef = useRef<GameController | null>(null);
+  // created once per run (component is keyed by runKey); constructor has no side effects
+  const [ctrl] = useState(() => new GameController(config));
   const tokenRef = useRef<Promise<{ token: string } | null> | null>(null);
   const [hud, setHud] = useState<HudSnapshot | null>(null);
   const [paused, setPaused] = useState(false);
@@ -93,11 +94,9 @@ export default function GameView({
 
   // ───────────── boot the run ─────────────
   useEffect(() => {
-    const ctrl = new GameController(config);
-    ctrlRef.current = ctrl;
     const params = new URLSearchParams(window.location.search);
     if (process.env.NODE_ENV !== "production" || params.has("debug")) window.__chitti = ctrl;
-    if (params.has("demo")) ctrl.demo = true;
+    if (params.has("demo")) ctrl.enableDemo();
     tokenRef.current = startServerRun(ctrl.config.mode, ctrl.sim.level.id, {
       chapterId: config.chapterId,
       dailyDate: config.dailyDate,
@@ -187,13 +186,12 @@ export default function GameView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const ctrl = ctrlRef.current;
   const resume = () => {
-    ctrl?.resume();
+    ctrl.resume();
     setPaused(false);
   };
   const pause = () => {
-    if (!ctrl || ctrl.sim.phase === "over") return;
+    if (ctrl.sim.phase === "over") return;
     ctrl.pause();
     setPaused(true);
   };
@@ -210,13 +208,13 @@ export default function GameView({
         {hud && !ended && <Hud s={hud} outfit={config.outfit} onPause={pause} />}
         <Toasts toasts={toasts} />
         {warn && !ended && <CrisisWarning stage={warn} />}
-        {hud?.phase === "briefing" && !paused && !ended && ctrl && (
+        {hud?.phase === "briefing" && !paused && !ended && (
           <Briefing s={hud} outfit={config.outfit} onStart={() => ctrl.confirmBriefing()} />
         )}
         {profile.settings.touchButtons && ctrl && !ended && !paused && (
           <TouchControls onLeft={() => ctrl.left()} onRight={() => ctrl.right()} onJump={() => ctrl.jump()} onSlide={() => ctrl.slide()} />
         )}
-        {paused && !ended && ctrl && (
+        {paused && !ended && (
           <PauseMenu
             onResume={resume}
             onRestart={() => {
