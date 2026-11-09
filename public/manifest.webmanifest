@@ -1,0 +1,10 @@
+{
+  "name": "CHITTI NAIDU RUN – The Great CM Escape",
+  "short_name": "Chitti Run",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1b1020",
+  "theme_color": "#f57c12",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

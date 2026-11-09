@@ -160,7 +160,7 @@ export class RunSim {
 
   // final confidence challenge
   fc: FinalChallenge | null = null;
-  pendingFc = false;
+  pendingFc: FinalChallenge | null = null;
   fcAttempts = 0;
   fcWins = 0;
   private fcCooldown = 0;
@@ -260,8 +260,8 @@ export class RunSim {
       this.emit({ type: "missionStart", mission: this.mission });
       this.setSupplyTimersForMission();
     } else if (this.pendingFc) {
-      this.pendingFc = false;
-      this.fc = new FinalChallenge(this.rng, this.fcAttempts, this.opts.relaxed);
+      this.fc = this.pendingFc;
+      this.pendingFc = null;
       this.emit({ type: "fcStart" });
       for (const s of this.fc.supplies) this.supplyTimers.set(s, 1.5);
     }
@@ -339,7 +339,7 @@ export class RunSim {
     if (this.phase !== "running") return;
 
     // governance drift
-    this.onStage(this.gov.tick(dt, !!this.fc || this.pendingFc));
+    this.onStage(this.gov.tick(dt, !!this.fc || !!this.pendingFc));
     this.checkGovernanceThresholds();
     if (this.phase !== "running") return;
 
@@ -748,7 +748,7 @@ export class RunSim {
       this.emit({ type: "bossEscaped" });
     }
     this.fcAttempts++;
-    this.pendingFc = true;
+    this.pendingFc = new FinalChallenge(this.rng, this.fcAttempts, this.opts.relaxed);
     if (this.opts.briefings) {
       this.phase = "briefing";
       this.emit({ type: "fcBriefing" });
@@ -1094,11 +1094,13 @@ export class RunSim {
           }
         : null,
       nextMissionIn: this.mission || this.boss || this.fc ? null : Math.max(0, this.missionTimer),
-      fc: this.fc
+      fc: (this.fc ?? this.pendingFc)
         ? {
-            timeLeft: this.fc.timeLeft,
-            timeLimit: this.fc.timeLimit,
-            objectives: this.fc.objectives.map((o) => ({
+            pending: !this.fc,
+            timeLeft: (this.fc ?? this.pendingFc)!.timeLeft,
+            timeLimit: (this.fc ?? this.pendingFc)!.timeLimit,
+            attempt: this.fcAttempts,
+            objectives: (this.fc ?? this.pendingFc)!.objectives.map((o) => ({
               label: o.def.label(o.target),
               progress: o.progress,
               target: o.target,
@@ -1142,6 +1144,8 @@ export interface HudSnapshot {
   } | null;
   nextMissionIn: number | null;
   fc: {
+    pending: boolean;
+    attempt: number;
     timeLeft: number;
     timeLimit: number;
     objectives: { label: string; progress: number; target: number; done: boolean }[];
