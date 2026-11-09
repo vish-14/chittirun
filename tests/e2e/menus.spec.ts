@@ -5,7 +5,7 @@ test("main menu and every screen render without errors", async ({ page }) => {
   const errors = await trackErrors(page);
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Chitti Naidu/i })).toBeVisible();
-  await expect(page.getByText(/entirely fictional/)).toBeVisible();
+  await expect(page.getByText(/political-satire game/)).toBeVisible();
   const screens: [RegExp, RegExp][] = [
     [/Endless Run/, /Select level/i],
     [/Campaign/, /^Campaign$/i],

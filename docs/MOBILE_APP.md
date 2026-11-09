@@ -63,6 +63,13 @@ first store upload** – it can never change afterwards. To rename, change it th
 * The party flag uses orange/white/green bands with a raised-hand ✋ emblem. A blue wheel/chakra-like emblem is
   deliberately avoided: the Indian national flag and emblems are protected under the *Emblems and Names
   (Prevention of Improper Use) Act, 1950* and the Flag Code.
+* **Partisan posters:** "WE WANT KCR" / "VOTE FOR CAR" name a real politician and reference a real party's
+  election symbol (text + a generic car icon; no photo, likeness or official logo). This makes the game partisan
+  political content: Google Play's political-content rules and Apple's guidelines then apply (be accurate, not
+  misleading, and clearly satirical), and **during an election's Model Code of Conduct** in India, material that asks
+  people to vote for a party may be treated as political advertising that needs certification. Simplest mitigation:
+  the poster texts live in one place (`src/game/art/hyderabad.ts`, `posterWeWant` / `posterVoteCar`) and can be
+  swapped for neutral slogans in a store build.
 * **Heads-up:** an open palm on an orange-white-green flag is very close to the registered election symbol and flag
   of a real party (INC), and the HYDRA demolition event references a real Hyderabad agency. Combined, players will
   read the game as satire of a real government rather than a fictional one. Political satire is generally allowed

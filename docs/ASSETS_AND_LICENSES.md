@@ -5,6 +5,7 @@
   animations, HUD portraits, four outfits), the fictional "Bongaram Praja Party" orange‑white‑green flag with a raised‑hand ✋ emblem (no blue, no wheel, so it can't be confused with the national flag),
   obstacles, pickups, crowds, roadside props, five bosses and five parallax backgrounds – is drawn **procedurally in
   code** (`src/game/art/*`) and exported by `npm run assets`. No external images, fonts or tracing were used.
+* Political posters are pixel text (plus a generic car icon) – no photographs, likenesses or party logos.
 * HYDRA van / JCB / house sprites are original pixel art; "HYDRA" refers to the city agency in a satirical game event.
 * **All music and sound effects** are original compositions synthesised at runtime (`src/game/audio/*`). No samples.
 * The 3×5 pixel font used on signs is an original glyph set (`src/game/art/painter.ts`).

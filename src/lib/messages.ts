@@ -35,6 +35,7 @@ const QUESTIONS: Partial<Record<string, string[]>> = {
   jam: ["“2 km ki 2 gantalu – idhi development aa?”", "“Signal panichesthunda asalu?”", "“Traffic jam lo pelli miss ayyindi!”"],
   auto: ["“Meter vesthara leda?”"],
   bus: ["“Bus eppudu time ki vasthundi?”"],
+  potQueue: ["“Neellu ekkada CM garu? Bindelu khaali!”", "“Roju tanker kosam line lo nilabadali aa?”", "“Water bill vasthundi, water raadu!”"],
   tanker: ["“Tap lo neellu eppudu?”", "“Tanker ki ₹2000 aa?!”"],
   cables: ["“Ee wires ki owner evaru?”"],
   speedBreaker: ["“Speed breaker aa, mountain aa?”"],

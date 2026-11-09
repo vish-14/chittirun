@@ -48,6 +48,7 @@ interface Roadside {
   crowd: number; // crowd variant or -1 for props
   seed: number;
   frame: string;
+  back?: boolean;
 }
 
 interface Particle {
@@ -79,6 +80,7 @@ export class RunScene extends Phaser.Scene {
   private lastPos = new Map<number, { x: number; y: number; s: number; kind: string; z: number }>();
   private roadside: Roadside[] = [];
   private roadsideDist = 0;
+  private buildingDist = 0;
   private particles: Particle[] = [];
   private weather: Particle[] = [];
   private warnings: { lanes: number[]; t: number; icons: Phaser.GameObjects.Image[] }[] = [];
@@ -173,7 +175,11 @@ export class RunScene extends Phaser.Scene {
     this.createAnims();
 
     // pre-populate roadside so the street is never empty
-    for (let z = 2; z < SPAWN_Z; z += 5) this.spawnRoadside(z);
+    for (let z = 2; z < SPAWN_Z; z += 2.6) this.spawnRoadside(z);
+    for (let z = 2; z < SPAWN_Z; z += 4) {
+      this.spawnBuilding(z, -1);
+      this.spawnBuilding(z + 2, 1);
+    }
 
     this.unsub = this.ctrl.onEvent((e) => this.onSimEvent(e));
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.unsub?.());
@@ -495,6 +501,14 @@ export class RunScene extends Phaser.Scene {
     g.fillRect(0, HORIZON, VIEW_W, 10);
   }
 
+  /** Back row: buildings and malls packed shoulder to shoulder behind the shops. */
+  private spawnBuilding(z: number, side: -1 | 1) {
+    const theme = THEMES[this.ctrl.level];
+    const frame = Phaser.Utils.Array.GetRandom(theme.buildings) as string;
+    const sprite = this.add.sprite(0, 0, "props", frame).setOrigin(0.5, 1);
+    this.roadside.push({ sprite, z, side, offset: 78 + Math.random() * 8, crowd: -1, seed: Math.random() * 10, frame, back: true });
+  }
+
   private spawnRoadside(z: number, forced?: { frame: string; side: -1 | 1 }) {
     const theme = THEMES[this.ctrl.level];
     const side = forced?.side ?? ((Math.random() < 0.5 ? -1 : 1) as -1 | 1);
@@ -530,9 +544,16 @@ export class RunScene extends Phaser.Scene {
   private updateRoadside(moved: number, dt: number) {
     const sim = this.ctrl.sim;
     this.roadsideDist += moved;
-    while (this.roadsideDist > 4.2) {
-      this.roadsideDist -= 4.2;
+    // dense street frontage on both sides: shops/posters/crowds in front, packed buildings behind
+    this.buildingDist += moved;
+    while (this.roadsideDist > 2.6) {
+      this.roadsideDist -= 2.6;
       this.spawnRoadside(SPAWN_Z);
+    }
+    while (this.buildingDist > 4) {
+      this.buildingDist -= 4;
+      this.spawnBuilding(SPAWN_Z, -1);
+      this.spawnBuilding(SPAWN_Z + 2, 1);
     }
     // green route signboard so it reaches the player exactly at the next real stop
     const leg = Math.floor((sim.distance + SPAWN_Z) / STOP_SPACING);
@@ -548,8 +569,8 @@ export class RunScene extends Phaser.Scene {
       const p = proj(r.z);
       r.sprite
         .setPosition(CX + r.side * (half + 18 + r.offset) * p, yAt(r.z))
-        .setScale(BASE_SCALE * p * (r.crowd >= 0 ? 1 : 1.1))
-        .setDepth(900 - r.z * 10); // never mirrored: signboards carry text
+        .setScale(BASE_SCALE * p * (r.crowd >= 0 ? 1 : r.back ? 1.25 : 1.1))
+        .setDepth((r.back ? 700 : 900) - r.z * 10); // never mirrored: signboards carry text
       if (r.crowd >= 0) r.sprite.setFrame(`crowd-${r.crowd}-${this.crowdPose(r.seed)}-${(beat + Math.floor(r.seed)) % 2}`);
       else if (r.frame === "rs-lamp-broken" || r.frame === "rs-signal-broken")
         // broken lights flicker irregularly

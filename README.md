@@ -36,6 +36,11 @@ missions. Full rules: [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 seconds to grab 3 🛑 stay orders, or the building comes down (−10 % CM Power). **City problems everywhere** –
 potholes, waterlogging and traffic jams on every route, with the public asking the CM questions about each one.
 
+**Street politics & water scarcity** – walls plastered with "CM DOWN DOWN", "WE WANT KCR" and "VOTE FOR CAR"
+posters (text + generic car icon only), crowds chanting "CM DOWN DOWN!" in a crisis, women with pots queuing at dry
+taps ("NO WATER") and a pot queue crossing the road as an obstacle, and packed apartments, commercial complexes and
+malls standing shoulder to shoulder on both sides of every route.
+
 **Screens** – main menu, character select (outfits + animation preview + V-sign victory pose), level select,
 campaign, daily challenge (seeded, same for everyone), global + local leaderboards, CM Performance Dashboard,
 Governance Mission Board, settings, how-to-play, pause menu, mission briefing, crisis warnings, no-confidence
@@ -121,7 +126,8 @@ provisioned automatically – read the plan and cost estimate (≈ $4–5/month 
 
 ## Disclaimer
 
-Chitti Naidu, the Bongaram Praja Party, its flag and every place, mission and event in this game are fictional.
-Any resemblance to real persons, parties or governments is coincidental. The game makes no claims or allegations
-about any real person or government. All art and music are original – see
+A parody / political-satire game. Chitti Naidu is a fictional cartoon character; missions and events are comedy, not
+factual claims or allegations. Real places, agencies (HYDRA) and public figures named on posters ("WE WANT KCR",
+"VOTE FOR CAR", "CM DOWN DOWN") are used only as political commentary – no likenesses, photos or official logos are
+used, and nobody named has endorsed the game. All art and music are original – see
 [`docs/ASSETS_AND_LICENSES.md`](docs/ASSETS_AND_LICENSES.md).

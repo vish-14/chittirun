@@ -14,6 +14,8 @@ export interface LevelTheme {
   sidewalk: string;
   sidewalkAlt: string;
   roadside: string[];
+  /** back row: packed apartments, complexes and malls standing shoulder to shoulder */
+  buildings: string[];
   crowdDensity: number;
 }
 
@@ -22,31 +24,31 @@ export const THEMES: Record<LevelId, LevelTheme> = {
     skyTop: "#3b2a5c", skyBottom: "#f29a6b", far: "#6b4466", near: "#a8645a",
     road: "#6a5f5a", roadDark: "#5c524d", laneMark: "#e8dcc0", edge: "#d9b98a",
     sidewalk: "#b08a62", sidewalkAlt: "#9c7752",
-    roadside: ["rs-arch", "rs-bangles", "rs-paan", "rs-irani", "rs-biryani", "rs-paan2", "rs-lamp-broken", "rs-poster-football", "rs-fanflags", "rs-chai"], crowdDensity: 1,
+    roadside: ["rs-poster-cmdown", "rs-poster-wewant", "rs-poster-votecar", "rs-poster-wall", "rs-water-queue", "rs-dry-tap", "rs-arch", "rs-bangles", "rs-paan", "rs-irani", "rs-biryani", "rs-paan2", "rs-lamp-broken", "rs-poster-football", "rs-fanflags", "rs-chai"], buildings: ["bd-apartment", "bd-apartment3", "bd-complex", "bd-apartment", "rs-arch", "bd-complex"], crowdDensity: 1,
   },
   traffic: {
     skyTop: "#1d2a4f", skyBottom: "#e3a35f", far: "#3a4466", near: "#4d5a7a",
     road: "#4a4c55", roadDark: "#40424a", laneMark: "#f5f5f5", edge: "#f5d01b",
     sidewalk: "#8a8d96", sidewalkAlt: "#7a7d86",
-    roadside: ["rs-metro-pillar", "rs-mall", "rs-billboard", "rs-signal-broken", "rs-paan", "rs-lamp-broken", "rs-poster-football2", "rs-shop", "rs-metro-pillar"], crowdDensity: 0.8,
+    roadside: ["rs-poster-cmdown", "rs-poster-wewant", "rs-poster-votecar", "rs-poster-wall", "rs-water-queue", "rs-dry-tap", "rs-metro-pillar", "rs-mall", "rs-billboard", "rs-signal-broken", "rs-paan", "rs-lamp-broken", "rs-poster-football2", "rs-shop", "rs-metro-pillar"], buildings: ["bd-mall2", "rs-mall", "bd-complex", "bd-apartment2", "bd-apartment", "bd-mall2"], crowdDensity: 0.8,
   },
   pothole: {
     skyTop: "#4a7bb5", skyBottom: "#f2d9a0", far: "#7a8aa0", near: "#a08060",
     road: "#5a5650", roadDark: "#4e4a45", laneMark: "#d8d0b8", edge: "#f07b17",
     sidewalk: "#a8906a", sidewalkAlt: "#987e58",
-    roadside: ["rs-crane", "rs-roadwork", "rs-lamp-broken", "rs-paan2", "rs-biryani", "rs-football-kids", "rs-poster-football", "rs-chai"], crowdDensity: 0.9,
+    roadside: ["rs-poster-cmdown", "rs-poster-wewant", "rs-poster-votecar", "rs-poster-wall", "rs-water-queue", "rs-dry-tap", "rs-crane", "rs-roadwork", "rs-lamp-broken", "rs-paan2", "rs-biryani", "rs-football-kids", "rs-poster-football", "rs-chai"], buildings: ["bd-apartment", "bd-complex", "bd-apartment3", "rs-mall", "bd-apartment2"], crowdDensity: 0.9,
   },
   water: {
     skyTop: "#5aa0d8", skyBottom: "#f7e3b5", far: "#a0786a", near: "#c4a07a",
     road: "#6e665c", roadDark: "#625a51", laneMark: "#efe6d0", edge: "#3d8bd9",
     sidewalk: "#c2a47c", sidewalkAlt: "#b0926a",
-    roadside: ["rs-watertower", "rs-pots", "rs-mall", "rs-metro-pillar", "rs-paan", "rs-irani", "rs-lamp-broken", "rs-fanflags"], crowdDensity: 1.1,
+    roadside: ["rs-poster-cmdown", "rs-poster-wewant", "rs-poster-votecar", "rs-poster-wall", "rs-water-queue", "rs-dry-tap", "rs-watertower", "rs-pots", "rs-mall", "rs-metro-pillar", "rs-paan", "rs-irani", "rs-lamp-broken", "rs-fanflags"], buildings: ["bd-apartment2", "rs-mall", "bd-mall2", "bd-complex", "bd-apartment", "rs-watertower"], crowdDensity: 1.1,
   },
   secretariat: {
     skyTop: "#2c3e6b", skyBottom: "#9fc0e0", far: "#5a6a8a", near: "#7a8a9a",
     road: "#55585e", roadDark: "#4b4e54", laneMark: "#ffffff", edge: "#e8e2d4",
     sidewalk: "#b8b2a4", sidewalkAlt: "#a8a294",
-    roadside: ["rs-column", "rs-flagpole", "rs-tree", "rs-files", "rs-paan2", "rs-lamp-broken", "rs-poster-football2", "rs-irani"], crowdDensity: 1.2,
+    roadside: ["rs-poster-cmdown", "rs-poster-wewant", "rs-poster-votecar", "rs-poster-wall", "rs-water-queue", "rs-dry-tap", "rs-column", "rs-flagpole", "rs-tree", "rs-files", "rs-paan2", "rs-lamp-broken", "rs-poster-football2", "rs-irani"], buildings: ["bd-complex", "bd-apartment", "bd-mall2", "bd-apartment3", "rs-column"], crowdDensity: 1.2,
   },
 };
 

@@ -314,7 +314,199 @@ function stayOrder(c: PixelCanvas) {
   text(c, 1, 6, "STOP", "#ffffff");
 }
 
+// ───────────────────────────── political wall posters (text only, no likenesses) ─────────────────────────────
+
+function pasted(c: PixelCanvas, w: number, h: number, bg: string) {
+  c.rect(0, 0, w, h, bg);
+  c.clear(w - 1, 0); // torn corner
+  c.clear(w - 2, 0);
+  c.clear(w - 1, 1);
+  c.px(1, 1, "#d8d0c0"); // glue/pin marks
+  c.px(w - 3, h - 2, "#d8d0c0");
+}
+
+function posterCmDown(c: PixelCanvas) {
+  pasted(c, 36, 50, "#1b1b1b");
+  c.rect(2, 2, 32, 4, "#d42a2a");
+  text(c, center(36, "CM", 3), 9, "CM", "#ff4d4d", 3);
+  text(c, center(36, "DOWN"), 27, "DOWN", "#ffffff");
+  text(c, center(36, "DOWN!"), 34, "DOWN!", "#ffffff");
+  // thumbs down
+  c.rect(14, 41, 6, 4, "#e0b08a");
+  c.rect(15, 45, 2, 3, "#e0b08a");
+  c.rect(2, 44, 32, 4, "#d42a2a");
+}
+
+const PINK = "#e8318c";
+
+function posterWeWant(c: PixelCanvas) {
+  pasted(c, 36, 50, PINK);
+  c.rect(2, 2, 32, 46, "#f25fa8");
+  text(c, center(36, "WE"), 6, "WE", "#ffffff");
+  text(c, center(36, "WANT"), 13, "WANT", "#ffffff");
+  text(c, center(36, "KCR", 2), 22, "KCR", "#fff36b", 2);
+  c.hline(4, 31, 34, "#ffffff");
+  text(c, center(36, "COME"), 37, "COME", "#ffffff");
+  text(c, center(36, "BACK!"), 43, "BACK!", "#ffffff");
+}
+
+function carIcon(c: PixelCanvas, x: number, y: number, col: string) {
+  c.rect(x + 3, y, 10, 4, col);
+  c.rect(x, y + 4, 17, 5, col);
+  c.rect(x + 5, y + 1, 3, 3, "#bfe6ff");
+  c.rect(x + 9, y + 1, 3, 3, "#bfe6ff");
+  c.ellipse(x + 4, y + 9, 2, 2, "#1b1020");
+  c.ellipse(x + 13, y + 9, 2, 2, "#1b1020");
+}
+
+function posterVoteCar(c: PixelCanvas) {
+  pasted(c, 36, 50, PINK);
+  c.rect(2, 2, 32, 46, "#f25fa8");
+  text(c, center(36, "VOTE"), 5, "VOTE", "#ffffff");
+  text(c, center(36, "FOR"), 12, "FOR", "#ffffff");
+  carIcon(c, 9, 20, "#ffffff");
+  text(c, center(36, "CAR", 2), 34, "CAR", "#fff36b", 2);
+}
+
+/** A wall plastered with overlapping posters – the classic Hyderabad compound wall. */
+function posterWall(c: PixelCanvas) {
+  c.rect(0, 6, 72, 34, "#cfc4b0");
+  c.rect(0, 6, 72, 2, "#e0d8c8");
+  for (let x = 0; x < 72; x += 9) c.vline(x, 8, 39, "#bdb29e");
+  const p1 = new PixelCanvas(36, 50); posterCmDown(p1);
+  const p2 = new PixelCanvas(36, 50); posterWeWant(p2);
+  const p3 = new PixelCanvas(36, 50); posterVoteCar(p3);
+  // half-size pastes (nearest-neighbour downscale)
+  const paste = (src: PixelCanvas, ox: number, oy: number) => {
+    for (let y = 0; y < 25; y++)
+      for (let x = 0; x < 18; x++) {
+        const [r, g, b, a] = src.get(x * 2, y * 2);
+        if (a) c.px(ox + x, oy + y, "#" + [r, g, b].map((v) => v.toString(16).padStart(2, "0")).join(""));
+      }
+  };
+  paste(p1, 2, 10);
+  paste(p2, 19, 12);
+  paste(p3, 37, 10);
+  paste(p1, 53, 12);
+}
+
+// ───────────────────────────── water scarcity ─────────────────────────────
+
+const POT_COLS = ["#d9772f", "#3d8bd9", "#e9a920", "#46a35b", "#c94040", "#9b59b6"];
+
+function potPerson(c: PixelCanvas, x: number, y: number, sari: string, pot: string, skin = "#c98b5a") {
+  c.ellipse(x + 4, y + 2, 3, 2.2, pot); // pot on the head
+  c.rect(x + 3, y - 1, 3, 1, shade(pot, -0.3));
+  c.ellipse(x + 4, y + 6, 2.2, 2.2, skin);
+  c.rect(x + 2, y + 4, 5, 1, "#1f1b26");
+  c.rect(x + 1, y + 9, 7, 9, sari);
+  c.line(x + 1, y + 9, x + 7, y + 15, shade(sari, 0.3));
+  c.vline(x, y + 2, y + 10, skin); // arm steadying the pot
+}
+
+/** Obstacle: a queue of women carrying pots crossing the road to the water tanker. */
+function potQueue(c: PixelCanvas) {
+  const saris = ["#d42a2a", "#2f8a3f", "#e9a920", "#7a3f8f"];
+  for (let i = 0; i < 4; i++) potPerson(c, 2 + i * 12, 6 + (i % 2), saris[i], POT_COLS[i]);
+  for (let i = 0; i < 5; i++) c.ellipse(5 + i * 10, 29, 3, 2.5, POT_COLS[(i + 2) % POT_COLS.length]);
+}
+
+function waterQueue(c: PixelCanvas) {
+  // long line of pots and people at a dry public tap
+  c.rect(52, 6, 3, 24, "#7d8a99");
+  c.rect(48, 6, 10, 3, "#7d8a99");
+  c.rect(46, 9, 3, 3, "#5d6470"); // tap, bone dry
+  c.rect(42, 0, 18, 7, "#fbf8f1");
+  text(c, 43, 1, "NO H2O", "#d42a2a");
+  for (let i = 0; i < 9; i++) c.ellipse(4 + i * 5, 28, 2.4, 2.2, POT_COLS[i % POT_COLS.length]);
+  potPerson(c, 2, 4, "#d42a2a", POT_COLS[1]);
+  potPerson(c, 14, 5, "#2f8a3f", POT_COLS[2], "#a86a3d");
+  potPerson(c, 26, 4, "#3f7fd9", POT_COLS[0]);
+}
+
+function dryTap(c: PixelCanvas) {
+  c.rect(10, 18, 4, 30, "#7d8a99");
+  c.rect(4, 18, 10, 3, "#7d8a99");
+  c.rect(3, 21, 3, 3, "#5d6470");
+  c.rect(0, 0, 24, 16, "#fbf8f1");
+  c.rect(0, 0, 24, 3, "#d42a2a");
+  text(c, center(24, "NO"), 4, "NO", "#d42a2a");
+  text(c, center(24, "WATER"), 10, "WATER", "#d42a2a");
+  c.ellipse(4, 34, 3, 3, POT_COLS[0]);
+  c.ellipse(19, 44, 3, 3, POT_COLS[1]);
+}
+
+// ───────────────────────────── crowded buildings ─────────────────────────────
+
+function apartment(c: PixelCanvas, wall: string, floors = 6) {
+  const h = floors * 13 + 8;
+  const top = 92 - h;
+  c.rect(2, top, 44, h, wall);
+  c.rect(2, top, 44, 2, shade(wall, 0.25));
+  c.rect(40, top, 6, h, shade(wall, -0.15));
+  for (let f = 0; f < floors; f++) {
+    const y = top + 6 + f * 13;
+    c.rect(6, y, 9, 7, "#3a4a5a");
+    c.rect(26, y, 9, 7, "#3a4a5a");
+    c.px(7, y + 1, "#9fd0ff");
+    c.px(27, y + 1, "#9fd0ff");
+    c.rect(4, y + 8, 40, 2, shade(wall, -0.3)); // balcony slab
+    c.rect(37, y + 1, 4, 3, "#e8e8e8"); // AC unit
+    if (f % 2 === 0) ["#e94b3c", "#3f7fd9", "#f6c445"].forEach((col, i) => c.rect(17 + i * 3, y + 4, 2, 3, col)); // laundry
+  }
+  c.rect(8, top - 7, 9, 7, "#2a2a2a"); // rooftop water drums
+  c.rect(20, top - 6, 7, 6, "#3d8bd9");
+  c.vline(34, top - 10, top, "#7d8a99"); // dish antenna mast
+  c.ellipse(34, top - 11, 3, 2, "#c8c8c8");
+}
+
+function complex(c: PixelCanvas) {
+  c.rect(0, 10, 58, 82, "#c8c2b4");
+  c.rect(0, 10, 58, 3, "#e0dacc");
+  const boards: [string, string][] = [
+    ["MOBILES", "#1d3f8f"],
+    ["TIFFINS", "#c62828"],
+    ["COACHING", "#2f8a3f"],
+    ["CLINIC", "#ffffff"],
+    ["SAREES", "#7a3f8f"],
+    ["BANK", "#f07b17"],
+  ];
+  boards.forEach(([t, col], i) => {
+    const y = 14 + i * 12;
+    c.rect(2, y, 54, 8, col);
+    text(c, center(58, t), y + 2, t, col === "#ffffff" ? "#c62828" : "#ffffff");
+    c.rect(4, y + 8, 50, 3, "#3a4a5a");
+  });
+  c.rect(20, 86, 18, 6, "#2a2a2a");
+}
+
+function mall2(c: PixelCanvas) {
+  c.rect(0, 14, 76, 66, "#9a7fb8");
+  for (let x = 3; x < 74; x += 7) for (let y = 30; y < 70; y += 7) c.rect(x, y, 6, 6, (x + y) % 3 ? "#c8b8e8" : "#e8deff");
+  c.rect(0, 8, 76, 18, "#e8318c");
+  text(c, center(76, "CITY", 2), 10, "CITY", "#ffffff", 2);
+  text(c, center(76, "MALL"), 20, "MALL", "#fff36b");
+  c.rect(26, 66, 24, 14, "#2a3a4a");
+  c.rect(28, 68, 9, 12, "#bfe6ff");
+  c.rect(39, 68, 9, 12, "#bfe6ff");
+  c.rect(56, 34, 16, 22, "#1d3f8f");
+  text(c, 58, 38, "FOOD", "#ffd34d");
+  text(c, 58, 45, "COURT", "#ffffff");
+}
+
 const ROADSIDE: Record<string, [number, number, (c: PixelCanvas) => void]> = {
+  "rs-poster-cmdown": [36, 50, posterCmDown],
+  "rs-poster-wewant": [36, 50, posterWeWant],
+  "rs-poster-votecar": [36, 50, posterVoteCar],
+  "rs-poster-wall": [72, 40, posterWall],
+  "ob-potQueue": [52, 32, potQueue],
+  "rs-water-queue": [60, 32, waterQueue],
+  "rs-dry-tap": [24, 48, dryTap],
+  "bd-apartment": [48, 92, (c) => apartment(c, "#e8c9a0", 6)],
+  "bd-apartment2": [48, 92, (c) => apartment(c, "#a8c8d8", 5)],
+  "bd-apartment3": [48, 92, (c) => apartment(c, "#e8a8b0", 6)],
+  "bd-complex": [58, 92, complex],
+  "bd-mall2": [76, 80, mall2],
   "dm-house": [52, 56, house],
   "dm-rubble": [52, 56, rubble],
   "dm-van": [56, 30, hydraVan],

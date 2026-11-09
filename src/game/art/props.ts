@@ -419,7 +419,7 @@ const SHIRTS = ["#d94f4f", "#3f7fd9", "#f2c53d", "#46a35b", "#9b59b6", "#f07b17"
 /** Variant 6 is a football fan in a sky-blue & white striped jersey. */
 export const CROWD_VARIANTS = 7;
 /** Questions the public asks the CM (each fits a 22px placard). */
-export const PLACARDS = ["ROAD?", "WHY?", "JAM!", "WATER", "FIX!", "?!", "HELP"];
+export const PLACARDS = ["ROAD?", "WHY?", "JAM!", "WATER", "DOWN!", "FIX!", "HELP"];
 const SKINS = ["#c98b5a", "#a86a3d", "#e0a878", "#8c5530"];
 
 function person(c: PixelCanvas, v: number, pose: "idle" | "cheer" | "protest" | "chant", f: number) {

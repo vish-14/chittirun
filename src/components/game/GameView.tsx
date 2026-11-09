@@ -140,6 +140,8 @@ export default function GameView({
           if (STAGE_ORDER.indexOf(e.to) > STAGE_ORDER.indexOf(e.from) && e.to !== "lost") {
             setWarn(e.to);
             setAnnounce(`Warning: ${e.to}`);
+            if (e.to === "crisis" || e.to === "final")
+              setTimeout(() => toast({ kind: "fail", title: "📢 “CM DOWN DOWN!”", detail: "The crowd is chanting outside…" }), 1200);
             setTimeout(() => setWarn((w) => (w === e.to ? null : w)), 2800);
           } else if (e.to === "control" || e.to === "pressure") {
             toast({ kind: "success", title: "Situation improving", detail: e.to === "control" ? "CM in Control" : "Public Pressure" });

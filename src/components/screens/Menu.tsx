@@ -72,8 +72,9 @@ export default function Menu({ nav }: { nav: Nav }) {
       </div>
 
       <footer className="mt-auto max-w-sm text-center text-[11px] leading-snug text-cream/50">
-        Chitti Naidu, the Bongaram Praja Party and every place, mission and event in this game are entirely fictional.
-        Any resemblance to real persons, parties or governments is coincidental. All art and music are original.
+        A parody / political-satire game. Chitti Naidu is a fictional cartoon character and all missions and events are
+        comedy, not factual claims. Real places, agencies and public figures named on posters are used only as political
+        commentary and have not endorsed this game. All art and music are original.
       </footer>
     </main>
   );
