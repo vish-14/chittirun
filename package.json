@@ -2,7 +2,7 @@
   "name": "chitti-naidu-run",
   "version": "1.0.0",
   "private": true,
-  "description": "CHITTI NAIDU RUN – The Great CM Escape. A fictional political-satire pixel-art endless runner.",
+  "description": "CHITTI NAIDU RUN \u2013 The Great CM Escape. A fictional political-satire pixel-art endless runner.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,7 +13,13 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test --trace off",
     "assets": "tsx scripts/generate-assets.ts",
-    "assets:check": "tsx scripts/generate-assets.ts --check"
+    "assets:check": "tsx scripts/generate-assets.ts --check",
+    "build:app": "BUILD_TARGET=app next build",
+    "cap:sync": "npm run build:app && cap sync",
+    "android:open": "cap open android",
+    "android:debug-apk": "npm run cap:sync && cd android && ./gradlew assembleDebug",
+    "ios:open": "cap open ios",
+    "app:icons": "tsx scripts/generate-app-icons.ts"
   },
   "engines": {
     "node": ">=20.9"
@@ -21,6 +27,14 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1164.0",
     "@aws-sdk/lib-dynamodb": "^3.1164.0",
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.6.0",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/status-bar": "^8.0.4",
     "next": "^16.4.5",
     "phaser": "^3.90.0",
     "react": "^19.3.1",
@@ -28,6 +42,7 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
     "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "^4.3.5",
     "@types/node": "^22.20.5",

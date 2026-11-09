@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Chitti Naidu Run</string>
+    <string name="title_activity_main">Chitti Naidu Run</string>
+    <string name="package_name">com.sritrilinga.chittinaidurun</string>
+    <string name="custom_url_scheme">com.sritrilinga.chittinaidurun</string>
+</resources>

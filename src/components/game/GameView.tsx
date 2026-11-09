@@ -6,6 +6,7 @@ import type { HudSnapshot, SimEvent } from "@/game/logic/sim";
 import { POWERUPS } from "@/game/logic/catalog";
 import type { GovernanceStage } from "@/game/logic/types";
 import { startServerRun, submitServerScore } from "@/lib/api";
+import { ONLINE_ENABLED } from "@/lib/platform";
 import { getProfile, recordRun, useProfile, type RecordOutcome, type RunResult } from "@/lib/profile";
 import type { Nav } from "../App";
 import Hud from "./Hud";
@@ -83,6 +84,7 @@ export default function GameView({
     // verified leaderboard submission (best effort, never blocks the player)
     const summary = sim.summary();
     void (async () => {
+      if (!ONLINE_ENABLED) return setServer({ state: "local" });
       const started = await tokenRef.current;
       if (!started) return setServer({ state: "offline" });
       const r = await submitServerScore(started.token, getProfile().playerName || "Chitti Fan", summary);
@@ -173,9 +175,14 @@ export default function GameView({
       setPaused(true);
     };
     if (surfaceRef.current) ctrl.attachInput(surfaceRef.current, togglePause, forcePause);
+    // native app: Android back button toggles pause, backgrounding pauses
+    window.addEventListener("chitti:back", togglePause);
+    window.addEventListener("chitti:pause", forcePause);
 
     return () => {
       disposed = true;
+      window.removeEventListener("chitti:back", togglePause);
+      window.removeEventListener("chitti:pause", forcePause);
       offHud();
       offEv();
       ctrl.destroy();
@@ -205,7 +212,7 @@ export default function GameView({
         data-testid="game-surface"
       >
         <div ref={hostRef} className="absolute inset-0" />
-        {hud && !ended && <Hud s={hud} outfit={config.outfit} onPause={pause} />}
+        {hud && !ended && <Hud s={hud} outfit={config.outfit} level={ctrl.level} onPause={pause} />}
         <Toasts toasts={toasts} />
         {warn && !ended && <CrisisWarning stage={warn} />}
         {hud?.phase === "briefing" && !paused && !ended && (

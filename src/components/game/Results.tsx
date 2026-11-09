@@ -8,9 +8,10 @@ import { pickLine } from "@/lib/messages";
 import type { RecordOutcome, RunResult } from "@/lib/profile";
 import { nativeShare, shareText, whatsappUrl } from "@/lib/share";
 import { Button, Sprite } from "../ui";
+import { IS_APP_BUILD, SHARE_URL } from "@/lib/platform";
 
 export interface ServerStatus {
-  state: "pending" | "accepted" | "rejected" | "offline";
+  state: "pending" | "accepted" | "rejected" | "offline" | "local";
   rank?: number;
   reason?: string;
 }
@@ -59,7 +60,7 @@ export default function Results({
           : "";
   const frames = lost ? ["lost-0", "lost-1"] : campaignWin ? ["victory-0", "victory-1", "victory-2", "victory-1"] : ["defeat-0", "defeat-1"];
   const text = shareText(result.score, levelName, lost ? "Lost the CM chair but kept the kurta! " : campaignWin ? `Cleared "${chapter?.title}"! ` : "");
-  const url = typeof window !== "undefined" ? window.location.origin : undefined;
+  const url = SHARE_URL || (!IS_APP_BUILD && typeof window !== "undefined" ? window.location.origin : undefined);
 
   return (
     <div
@@ -116,6 +117,7 @@ export default function Results({
               {server.state === "accepted" && `Verified · rank #${server.rank}`}
               {server.state === "rejected" && `Not accepted (${server.reason})`}
               {server.state === "offline" && "Offline – saved locally"}
+              {server.state === "local" && "Saved on this device"}
             </dd>
           </dl>
           {result.campaignStatus && (

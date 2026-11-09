@@ -1,5 +1,9 @@
 # AWS deployment plan – CHITTI NAIDU RUN
 
+> **Website only.** The Android/iOS apps are offline and local-first and need none of this. The website (and
+> therefore this AWS setup) is planned to be retired once the apps ship – see `docs/MOBILE_APP.md`. If you launch the
+> app first, you can skip AWS entirely.
+
 > **Nothing in this repository provisions paid AWS resources automatically.** Everything below is a
 > plan to review and approve first. Prices are approximate (Mumbai `ap-south-1`, late 2026) – confirm
 > with the [AWS Pricing Calculator](https://calculator.aws/) before deploying.

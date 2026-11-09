@@ -1,7 +1,7 @@
 # CHITTI NAIDU RUN – The Great CM Escape
 
 A humorous, **entirely fictional** political-satire endless runner. Help Chitti Naidu – a cartoon Chief Minister
-with a pompadour, a neat beard, a white kurta, an orange waistcoat and teal sneakers – dodge auto-rickshaws,
+with a pompadour, a neat beard, a full green kurta, an orange‑white‑green kanduva and teal sneakers – dodge auto-rickshaws,
 potholes, water tankers and red tape across five Hyderabad-inspired (fictional) levels, while keeping his
 **CM Power** and **Public Approval** alive.
 
@@ -16,8 +16,13 @@ score multipliers, 3 lives with invulnerability frames, speed and density ramp o
 (Irani Chai, Biryani Shield, Metro Pass, File Collector, Promise Rocket, Water Tanker Shield) and a boss per level
 (Runaway Mega-Auto, Gridlock Double-Decker, Crater-Digging JCB, Thirsty Mega-Tanker, Red-Tape Golem).
 
-**Levels** – Old City Chaos · Traffic Madness · Pothole Paradise · Water Crisis Escape · Secretariat Escape, each with
-its own background, obstacle mix, difficulty curve, boss, song and level-specific sound effects. Levels unlock by score.
+**Levels = real Hyderabad routes** – Old City Chaos (Charminar → Koti) · Traffic Madness (Ameerpet → Nampally metro
+corridor) · Pothole Paradise (Mehdipatnam → Golconda) · Water Crisis Escape (Hitech City → Gachibowli) · Secretariat
+Escape (Tank Bund → Secretariat). Each has its own landmark skyline (Charminar, metro viaduct, Golconda Fort, Cyber
+Towers-style IT tower, Hussain Sagar's Buddha statue), green signboards for every real stop, a live "📍 next stop"
+HUD, paan shops, Irani cafés, biryani houses, shopping malls, metro pillars and trains, flickering broken street
+lights and signals, potholes and traffic jams, football-fan posters and bunting, its own obstacle mix, difficulty
+curve, boss, song and sound effects. Levels unlock by score.
 
 **CM Governance system (core mechanic)** – seven timed missions (Road Development, Water Supply, Traffic
 Management, Employment Drive, Public Services, Infrastructure Development, timed Emergency Response) with briefings,
@@ -36,6 +41,14 @@ challenge, results / CM Position Lost screens with Telugu-English one-liners and
 contrast, larger text, relaxed mode (slower, longer timers), optional briefings, ARIA progress bars and live
 announcements, auto-pause when the tab is hidden.
 
+## Website + Android/iOS app
+
+One codebase, two targets. The **website** (`npm run build`) can use an optional verified global leaderboard on
+AWS. The **app** (`npm run build:app` + Capacitor, projects in `android/` and `ios/`) is fully **offline and
+local-first** – every score, setting and campaign save stays on the phone. The plan is to retire the website later
+and ship app-only; see [`docs/MOBILE_APP.md`](docs/MOBILE_APP.md) for builds, store publishing (incl. the D-U-N-S
+requirement) and the website-removal roadmap.
+
 ## Quick start
 
 ```bash
@@ -52,6 +65,9 @@ npm run dev          # http://localhost:3000
 | `npm run lint` / `typecheck` | ESLint / `tsc --noEmit` |
 | `npm run assets` | Regenerate all sprite sheets & backgrounds into `public/assets/sprites` (content-hashed) |
 | `npm run assets:check` | Fail if committed assets are stale (used in CI and Amplify build) |
+| `npm run build:app` / `cap:sync` | Offline static bundle for the apps / copy it into `android/` + `ios/` |
+| `npm run android:open` / `ios:open` | Open the native projects in Android Studio / Xcode |
+| `npm run app:icons` | Regenerate app icons and splash screens from the pixel art |
 
 Debug helpers (dev builds, or any build with `?debug=1`): `window.__chitti` exposes the running game controller;
 `?demo=1` lets the autopilot play.
@@ -91,8 +107,9 @@ Design choices:
 * `npm run test:e2e` – 29 browser tests on Desktop Chrome, Pixel 7 and iPhone 13 viewports (touch emulated, Chromium
   engine). See [`docs/TESTING.md`](docs/TESTING.md) for the manual real-device checklist (Safari/WebKit).
 
-## Deployment (AWS)
+## Deployment (AWS – website only, optional)
 
+The apps need no AWS at all. 
 Deployment-ready for **AWS Amplify Hosting** (SSR + Lambda-backed API routes), **DynamoDB**, **S3 + CloudFront**,
 **Route 53**, **ACM**, **CloudWatch** and **AWS Budgets**, with separate staging/production stages. Nothing is
 provisioned automatically – read the plan and cost estimate (≈ $4–5/month per stage for an MVP) in

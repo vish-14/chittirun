@@ -8,6 +8,8 @@ import type { SimEvent } from "../logic/sim";
 import type { Entity, GovernanceStage, ObstacleKind } from "../logic/types";
 import type { GameController } from "../controller";
 import { assetUrl } from "../assets";
+import { CROWD_VARIANTS } from "../art/props";
+import { ROUTES, STOP_SPACING, stopSlug } from "../logic/routes";
 
 export const VIEW_W = 360;
 export const VIEW_H = 640;
@@ -45,6 +47,7 @@ interface Roadside {
   offset: number;
   crowd: number; // crowd variant or -1 for props
   seed: number;
+  frame: string;
 }
 
 interface Particle {
@@ -85,6 +88,8 @@ export class RunScene extends Phaser.Scene {
   private time0 = 0;
   private unsub: (() => void) | null = null;
   private outfitKey = "chitti-classic";
+  private lastSignLeg = 0;
+  private train: Phaser.GameObjects.Image | null = null;
 
   constructor() {
     super("run");
@@ -364,6 +369,7 @@ export class RunScene extends Phaser.Scene {
     this.updateWarnings(running ? dt : 0);
     this.updateParticles(running ? dt : dt * 0.3);
     this.updateWeather(running ? dt : 0);
+    this.updateTrain(dt);
     this.far.tilePositionX = sim.player.x * 6 + this.offset * 0.02;
     this.near.tilePositionX = sim.player.x * 12 + this.offset * 0.05;
   }
@@ -443,20 +449,21 @@ export class RunScene extends Phaser.Scene {
     g.fillRect(0, HORIZON, VIEW_W, 10);
   }
 
-  private spawnRoadside(z: number) {
+  private spawnRoadside(z: number, forced?: { frame: string; side: -1 | 1 }) {
     const theme = THEMES[this.ctrl.level];
-    const side = (Math.random() < 0.5 ? -1 : 1) as -1 | 1;
+    const side = forced?.side ?? ((Math.random() < 0.5 ? -1 : 1) as -1 | 1);
     const crowdChance = 0.55 * theme.crowdDensity * (this.stage === "control" ? 1 : this.stage === "pressure" ? 1.1 : 1.4);
-    const isCrowd = Math.random() < crowdChance;
-    const frame = isCrowd ? "crowd-0-idle-0" : Phaser.Utils.Array.GetRandom(theme.roadside);
+    const isCrowd = !forced && Math.random() < crowdChance;
+    const frame = forced?.frame ?? (isCrowd ? "crowd-0-idle-0" : Phaser.Utils.Array.GetRandom(theme.roadside));
     const sprite = this.add.sprite(0, 0, "props", frame).setOrigin(0.5, 1);
     this.roadside.push({
       sprite,
       z,
       side,
-      offset: isCrowd ? 12 + Math.random() * 30 : 34 + Math.random() * 20,
-      crowd: isCrowd ? Math.floor(Math.random() * 6) : -1,
+      offset: forced ? 20 : isCrowd ? 12 + Math.random() * 30 : 34 + Math.random() * 20,
+      crowd: isCrowd ? Math.floor(Math.random() * CROWD_VARIANTS) : -1,
       seed: Math.random() * 10,
+      frame,
     });
   }
 
@@ -481,6 +488,13 @@ export class RunScene extends Phaser.Scene {
       this.roadsideDist -= 4.2;
       this.spawnRoadside(SPAWN_Z);
     }
+    // green route signboard so it reaches the player exactly at the next real stop
+    const leg = Math.floor((sim.distance + SPAWN_Z) / STOP_SPACING);
+    if (leg > this.lastSignLeg) {
+      this.lastSignLeg = leg;
+      const stops = ROUTES[this.ctrl.level].stops;
+      this.spawnRoadside(SPAWN_Z, { frame: `sign-${stopSlug(stops[leg % stops.length])}`, side: leg % 2 ? 1 : -1 });
+    }
     const half = 1.62 * LANE_W;
     const beat = Math.floor((this.time.now - this.time0) / (this.stage === "final" ? 160 : 260)) % 2;
     for (const r of this.roadside) {
@@ -489,9 +503,11 @@ export class RunScene extends Phaser.Scene {
       r.sprite
         .setPosition(CX + r.side * (half + 18 + r.offset) * p, yAt(r.z))
         .setScale(BASE_SCALE * p * (r.crowd >= 0 ? 1 : 1.1))
-        .setDepth(900 - r.z * 10)
-        .setFlipX(r.side < 0 && r.crowd < 0);
+        .setDepth(900 - r.z * 10); // never mirrored: signboards carry text
       if (r.crowd >= 0) r.sprite.setFrame(`crowd-${r.crowd}-${this.crowdPose(r.seed)}-${(beat + Math.floor(r.seed)) % 2}`);
+      else if (r.frame === "rs-lamp-broken" || r.frame === "rs-signal-broken")
+        // broken lights flicker irregularly
+        r.sprite.setFrame(Math.sin(this.time.now / 37 + r.seed * 11) > 0.6 ? `${r.frame}-on` : r.frame);
       r.sprite.setAlpha(r.z > SPAWN_Z - 6 ? Math.max(0, (SPAWN_Z - r.z) / 6) : 1);
     }
     this.roadside = this.roadside.filter((r) => {
@@ -619,6 +635,25 @@ export class RunScene extends Phaser.Scene {
         g.fillStyle(0x777777, 0.85);
         g.fillRect(w.x + 1, w.y + 1, 5, 1);
       }
+    }
+  }
+
+  /** Hyderabad Metro trains glide along the skyline on metro routes. */
+  private updateTrain(dt: number) {
+    const lvl = this.ctrl.level;
+    if (lvl !== "traffic" && lvl !== "water") return;
+    if (!this.train) {
+      // runs on the viaduct deck drawn in the near layer (traffic) / above the skyline (water)
+      const deckY = lvl === "traffic" ? HORIZON - 33 : HORIZON - 40;
+      this.train = this.add.image(-300, deckY, "props", "fx-metro-train").setOrigin(0, 1).setScale(1.2).setDepth(-79);
+      this.train.setData("dir", 1);
+    }
+    const dir = this.train.getData("dir") as number;
+    this.train.x += dir * 70 * dt;
+    if (this.train.x > VIEW_W + 400 || this.train.x < -600) {
+      const nd = -dir;
+      this.train.setData("dir", nd).setFlipX(nd < 0);
+      this.train.x = nd > 0 ? -300 : VIEW_W + 200;
     }
   }
 

@@ -5,6 +5,7 @@ import { applyChapterResult, CHAPTERS, initialCampaign, type CampaignProgress } 
 import { LEVELS, isLevelId } from "@/game/logic/levels";
 import { MISSION_IDS } from "@/game/logic/missions";
 import type { EndReason, GameMode, LevelId, MissionId, MissionStatus } from "@/game/logic/types";
+import { mirrorSave, readNativeSave } from "./native";
 
 export interface Settings {
   music: number;
@@ -43,6 +44,8 @@ export interface LocalScore {
 
 export interface Profile {
   version: 1;
+  /** ms timestamp of the last save – used to pick the newest copy (WebView vs native storage). */
+  savedAt: number;
   playerName: string;
   outfit: Outfit;
   unlockedOutfits: Outfit[];
@@ -90,6 +93,7 @@ function defaultStats(): Stats {
 export function defaultProfile(): Profile {
   return {
     version: 1,
+    savedAt: 0,
     playerName: "",
     outfit: "classic",
     unlockedOutfits: ["classic"],
@@ -145,6 +149,7 @@ export function parseProfile(raw: string | null): Profile {
     stats.byMission = { ...defaultStats().byMission, ...(p.stats?.byMission ?? {}) };
     return {
       version: 1,
+      savedAt: num(p.savedAt, 0),
       playerName: typeof p.playerName === "string" ? p.playerName.slice(0, 16) : "",
       outfit: p.outfit && outfits.includes(p.outfit) ? p.outfit : "classic",
       unlockedOutfits: outfits.length ? Array.from(new Set<Outfit>(["classic", ...outfits])) : ["classic"],
@@ -186,13 +191,32 @@ export function getProfile(): Profile {
 export function updateProfile(fn: (p: Profile) => Profile | void) {
   const draft = structuredClone(read());
   const next = fn(draft) ?? draft;
+  next.savedAt = Date.now();
   current = next;
+  const json = JSON.stringify(next);
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(next));
+    window.localStorage.setItem(KEY, json);
   } catch {
     /* storage full / private mode – progress stays in memory for this session */
   }
+  void mirrorSave(json);
   listeners.forEach((l) => l());
+}
+
+/** On app start, restore the newest save from native storage (iOS may evict WebView storage). */
+export async function hydrateFromNative() {
+  const raw = await readNativeSave();
+  if (!raw) return;
+  const nativeProfile = parseProfile(raw);
+  if (nativeProfile.savedAt > read().savedAt) {
+    current = nativeProfile;
+    try {
+      window.localStorage.setItem(KEY, raw);
+    } catch {
+      /* ignore */
+    }
+    listeners.forEach((l) => l());
+  }
 }
 
 export function resetProfile() {

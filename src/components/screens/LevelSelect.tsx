@@ -1,5 +1,6 @@
 "use client";
 import { LEVELS } from "@/game/logic/levels";
+import { ROUTES } from "@/game/logic/routes";
 import type { LevelId } from "@/game/logic/types";
 import { useProfile } from "@/lib/profile";
 import { BgPreview, Button, ScreenShell } from "../ui";
@@ -21,6 +22,7 @@ export default function LevelSelect({ onBack, onPlay }: { onBack: () => void; on
                   <h2 className="font-pixel font-bold text-saffron">
                     {l.index + 1}. {l.name}
                   </h2>
+                  <p className="text-xs font-semibold text-emerald-300">📍 {ROUTES[l.id].name}</p>
                   <p className="text-xs text-cream/70">{l.tagline}</p>
                   <p className="mt-1 text-xs text-cream/60">
                     Boss: <span className="text-cream">{l.boss.name}</span>

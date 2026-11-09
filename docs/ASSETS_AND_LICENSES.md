@@ -2,7 +2,7 @@
 
 ## Original assets (this project)
 * **All pixel art** – the Chitti Naidu character (idle, victory, defeat, CM-lost, run, crisis-run, jump, slide, hit
-  animations, HUD portraits, four outfits), the fictional "Bongaram Praja Party" flag with its spinning-top emblem,
+  animations, HUD portraits, four outfits), the fictional "Bongaram Praja Party" orange‑white‑green flag with its red‑and‑gold spinning‑top emblem (deliberately not a wheel/chakra, so it can't be confused with the national flag),
   obstacles, pickups, crowds, roadside props, five bosses and five parallax backgrounds – is drawn **procedurally in
   code** (`src/game/art/*`) and exported by `npm run assets`. No external images, fonts or tracing were used.
 * **All music and sound effects** are original compositions synthesised at runtime (`src/game/audio/*`). No samples.

@@ -3,7 +3,8 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import type { RunConfig } from "@/game/controller";
 import { getAudio } from "@/game/audio/engine";
-import { useProfile } from "@/lib/profile";
+import { hydrateFromNative, useProfile } from "@/lib/profile";
+import { exitApp, initNativeShell } from "@/lib/native";
 import Menu from "./screens/Menu";
 import CharacterSelect from "./screens/CharacterSelect";
 import LevelSelect from "./screens/LevelSelect";
@@ -51,6 +52,21 @@ export default function App() {
     el.classList.toggle("reduced-motion", s.reducedMotion);
     getAudio().setVolumes(s.music, s.sfx, s.muted);
   }, [s.highContrast, s.largeText, s.reducedMotion, s.music, s.sfx, s.muted]);
+
+  // Native shell: status bar, saves, Android back button (outside the game: back → menu → exit)
+  const screenName = screen.name;
+  useEffect(() => {
+    let cleanup = () => {};
+    void initNativeShell().then((c) => (cleanup = c));
+    void hydrateFromNative();
+    return () => cleanup();
+  }, []);
+  useEffect(() => {
+    if (screenName === "game") return; // GameView handles back (pause)
+    const onBack = () => (screenName === "menu" ? void exitApp() : setScreen({ name: "menu" }));
+    window.addEventListener("chitti:back", onBack);
+    return () => window.removeEventListener("chitti:back", onBack);
+  }, [screenName]);
 
   const nav = useCallback<Nav>((next) => {
     setScreen(next);

@@ -5,6 +5,7 @@ import { utcDateKey } from "@/game/logic/daily";
 import { LEVELS } from "@/game/logic/levels";
 import { fetchLeaderboard, type BoardEntry } from "@/lib/api";
 import { useProfile } from "@/lib/profile";
+import { ONLINE_ENABLED } from "@/lib/platform";
 import { Panel, ScreenShell } from "../ui";
 
 const BOARDS = [
@@ -41,6 +42,7 @@ export default function Leaderboard({ onBack }: { onBack: () => void }) {
           ))}
         </select>
       </label>
+      {ONLINE_ENABLED ? (
       <Panel title="Global (verified scores)">
         {rows === "loading" && <p role="status">Loading…</p>}
         {rows === null && <p className="text-sm text-amber-300">Leaderboard server unreachable – showing local scores below.</p>}
@@ -57,6 +59,11 @@ export default function Leaderboard({ onBack }: { onBack: () => void }) {
           </ol>
         )}
       </Panel>
+      ) : (
+        <Panel>
+          <p className="text-sm text-cream/80">All scores are stored privately on this device – no account or internet needed.</p>
+        </Panel>
+      )}
       <Panel title="Local high scores (this device)">
         {p.localBoard.length === 0 ? (
           <p className="text-sm text-cream/70">Play a run to set your first score.</p>

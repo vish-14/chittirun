@@ -1,36 +1,36 @@
 {
   "atlases": {
     "chitti-classic": {
-      "png": "chitti-classic.38ec4cdee9.png",
-      "json": "chitti-classic.d6635283ea.json"
+      "png": "chitti-classic.c526365e72.png",
+      "json": "chitti-classic.25b105d8c5.json"
     },
     "chitti-monsoon": {
-      "png": "chitti-monsoon.fd8f4d650c.png",
-      "json": "chitti-monsoon.256d1b515b.json"
+      "png": "chitti-monsoon.bb5081b277.png",
+      "json": "chitti-monsoon.9712cc1a4e.json"
     },
     "chitti-festive": {
-      "png": "chitti-festive.a70d17bb9e.png",
-      "json": "chitti-festive.d016fa92a7.json"
+      "png": "chitti-festive.bdcf3e4a93.png",
+      "json": "chitti-festive.7afc297c2a.json"
     },
     "chitti-golden": {
-      "png": "chitti-golden.fcea85f38e.png",
-      "json": "chitti-golden.8c2f2fba49.json"
+      "png": "chitti-golden.0decc0dfc3.png",
+      "json": "chitti-golden.5dc074a103.json"
     },
     "props": {
-      "png": "props.51bdd3956d.png",
-      "json": "props.fccea63ca4.json"
+      "png": "props.19557e812c.png",
+      "json": "props.06793e2922.json"
     }
   },
   "images": {
-    "bg-old-city-far": "bg-old-city-far.90f509f306.png",
+    "bg-old-city-far": "bg-old-city-far.0e5f394f63.png",
     "bg-old-city-near": "bg-old-city-near.1a4a972bf6.png",
     "bg-traffic-far": "bg-traffic-far.854b806dea.png",
-    "bg-traffic-near": "bg-traffic-near.82b664a71c.png",
-    "bg-pothole-far": "bg-pothole-far.28806433a5.png",
+    "bg-traffic-near": "bg-traffic-near.9c521fa752.png",
+    "bg-pothole-far": "bg-pothole-far.ed22ff86c0.png",
     "bg-pothole-near": "bg-pothole-near.82c04d6a00.png",
-    "bg-water-far": "bg-water-far.6f2978e7e3.png",
+    "bg-water-far": "bg-water-far.f2362d9862.png",
     "bg-water-near": "bg-water-near.05b56cfc2e.png",
-    "bg-secretariat-far": "bg-secretariat-far.9ffc48a6fe.png",
+    "bg-secretariat-far": "bg-secretariat-far.fa5205d547.png",
     "bg-secretariat-near": "bg-secretariat-near.624291fa36.png"
   }
 }

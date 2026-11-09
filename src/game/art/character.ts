@@ -3,7 +3,7 @@ import { PixelCanvas, type Frame } from "./painter";
 /**
  * Chitti Naidu – an entirely fictional cartoon CM. Original design:
  * chibi proportions, tall swept pompadour with grey "executive" temples, neat boxed beard,
- * big expressive eyebrows, white kurta, orange waistcoat with a blue pocket pen,
+ * big expressive eyebrows, full green kurta, an orange-white-green kanduva (shoulder stole),
  * and signature teal sneakers. Not based on any real person.
  */
 export const PAL = {
@@ -15,8 +15,12 @@ export const PAL = {
   hairHi: "#3f3a52",
   grey: "#a7adb8",
   beard: "#2b2129",
-  kurta: "#f5f2ea",
-  kurtaShade: "#cfc7b8",
+  kurta: "#2e9d4f",
+  kurtaShade: "#1d7038",
+  kurtaHi: "#4fc46e",
+  kanduvaOrange: "#f57c12",
+  kanduvaWhite: "#fbf8f1",
+  kanduvaGreen: "#0c6a2c",
   waist: "#f07b17",
   waistShade: "#bf560b",
   waistHi: "#ffa548",
@@ -37,35 +41,30 @@ export const PAL = {
   pole: "#7a4a22",
   flagOrange: "#f57c12",
   flagWhite: "#fbf8f1",
+  flagGreen: "#138a3d",
   emblem: "#1d3f8f",
   emblemHi: "#5d8ff0",
 } as const;
 
 export type Outfit = "classic" | "monsoon" | "golden" | "festive";
 
-/** Palette swaps for unlockable outfits (waistcoat colours only – same character). */
+/** Palette swaps for unlockable outfits (kurta colours only – the tricolour kanduva always stays). */
 export const OUTFITS: Record<Outfit, { name: string; unlock: string; swap: Record<string, string> }> = {
-  classic: { name: "Classic Orange", unlock: "Default", swap: {} },
+  classic: { name: "Classic Green", unlock: "Default", swap: {} },
   monsoon: {
     name: "Monsoon Navy",
     unlock: "Complete campaign chapter 'Water Emergency'",
-    swap: { [PAL.waist]: "#2c4a8a", [PAL.waistShade]: "#1c2f5c", [PAL.waistHi]: "#4d74c4" },
+    swap: { [PAL.kurta]: "#2c4a8a", [PAL.kurtaShade]: "#1c2f5c", [PAL.kurtaHi]: "#4d74c4" },
   },
   festive: {
     name: "Festive Maroon",
     unlock: "Defeat 3 bosses (total)",
-    swap: { [PAL.waist]: "#8f1d3a", [PAL.waistShade]: "#5e1025", [PAL.waistHi]: "#c23d5e", [PAL.button]: "#ffe9a3" },
+    swap: { [PAL.kurta]: "#8f1d3a", [PAL.kurtaShade]: "#5e1025", [PAL.kurtaHi]: "#c23d5e", [PAL.button]: "#ffe9a3" },
   },
   golden: {
     name: "Golden Kurta",
     unlock: "Win a Final Confidence Challenge",
-    swap: {
-      [PAL.waist]: "#e8b923",
-      [PAL.waistShade]: "#b0860f",
-      [PAL.waistHi]: "#ffe27a",
-      [PAL.kurta]: "#fff6d8",
-      [PAL.kurtaShade]: "#e3d3a3",
-    },
+    swap: { [PAL.kurta]: "#e8b923", [PAL.kurtaShade]: "#b0860f", [PAL.kurtaHi]: "#ffe27a" },
   },
 };
 
@@ -108,39 +107,41 @@ function leg(c: PixelCanvas, hipX: number, hipY: number, footX: number, footY: n
   }
 }
 
+/** Tricolour kanduva strip, 3px wide. `rev` mirrors the stripe order for the right side. */
+function kanduvaStrip(c: PixelCanvas, x: number, y0: number, y1: number, rev: boolean) {
+  const cols = [PAL.kanduvaOrange, PAL.kanduvaWhite, PAL.kanduvaGreen];
+  if (rev) cols.reverse();
+  cols.forEach((col, i) => c.vline(x + i, y0, y1, col));
+  // fringe
+  for (let i = 0; i < 3; i++) if ((i + y1) % 2 === 0) c.px(x + i, y1 + 1, cols[i]);
+}
+
 function torsoFront(c: PixelCanvas, x: number, y: number) {
-  // kurta (long, below waistcoat)
+  // full green kurta
   c.rect(x + 9, y + 22, 15, 16, PAL.kurta);
+  c.rect(x + 9, y + 23, 2, 14, PAL.kurtaHi);
   c.rect(x + 21, y + 24, 3, 14, PAL.kurtaShade);
-  c.rect(x + 14, y + 21, 5, 2, PAL.kurta); // collar
-  c.px(x + 14, y + 21, PAL.kurtaShade);
-  c.px(x + 18, y + 21, PAL.kurtaShade);
-  // waistcoat panels with V opening
-  for (let j = 0; j < 12; j++) {
-    const open = j < 4 ? 3 - Math.floor(j / 2) : 1;
-    for (let i = 9; i <= 23; i++) {
-      if (Math.abs(i - 16) < open) continue;
-      const col = i >= 21 ? PAL.waistShade : i <= 10 ? PAL.waistHi : PAL.waist;
-      c.px(x + i, y + 23 + j, col);
-    }
-  }
-  c.vline(x + 16, y + 26, y + 34, PAL.kurtaShade);
-  for (const by of [27, 30, 33]) c.px(x + 15, y + by, PAL.button);
-  // pocket + pen
-  c.hline(x + 11, x + 13, y + 27, PAL.waistShade);
-  c.vline(x + 12, y + 25, y + 27, PAL.pen);
-  c.px(x + 12, y + 24, "#bcd3ff");
+  c.vline(x + 16, y + 23, y + 31, PAL.kurtaShade); // placket
+  for (const by of [25, 28, 31]) c.px(x + 16, y + by, PAL.button);
+  c.px(x + 10, y + 37, PAL.kurtaShade); // side slits
+  c.px(x + 22, y + 37, PAL.kurtaShade);
+  // kanduva: around the neck, both ends hanging down the front
+  c.hline(x + 11, x + 21, y + 21, PAL.kanduvaOrange);
+  c.hline(x + 12, x + 20, y + 22, PAL.kanduvaWhite);
+  kanduvaStrip(c, x + 11, y + 22, y + 33, false);
+  kanduvaStrip(c, x + 19, y + 22, y + 33, true);
 }
 
 function torsoBack(c: PixelCanvas, x: number, y: number) {
   c.rect(x + 9, y + 22, 15, 16, PAL.kurta);
+  c.rect(x + 9, y + 23, 2, 14, PAL.kurtaHi);
   c.rect(x + 21, y + 24, 3, 14, PAL.kurtaShade);
-  c.rect(x + 9, y + 23, 15, 12, PAL.waist);
-  c.rect(x + 9, y + 23, 2, 12, PAL.waistHi);
-  c.rect(x + 21, y + 23, 3, 12, PAL.waistShade);
-  c.vline(x + 16, y + 24, y + 34, PAL.waistShade); // back seam
-  c.hline(x + 12, x + 20, y + 31, PAL.waistShade); // belt tab
-  c.rect(x + 14, y + 21, 5, 2, PAL.kurta);
+  c.vline(x + 16, y + 26, y + 37, PAL.kurtaShade); // back seam
+  // kanduva draped across the shoulders
+  c.hline(x + 10, x + 22, y + 22, PAL.kanduvaOrange);
+  c.hline(x + 10, x + 22, y + 23, PAL.kanduvaWhite);
+  c.hline(x + 10, x + 22, y + 24, PAL.kanduvaGreen);
+  c.rect(x + 14, y + 21, 5, 1, PAL.kanduvaOrange);
 }
 
 function headFront(c: PixelCanvas, x: number, y: number, face: Face) {
@@ -268,20 +269,31 @@ function headBack(c: PixelCanvas, x: number, y: number) {
   c.rect(x + 13, y + 19, 7, 2, PAL.skinShade);
 }
 
+/** Orange / white / green bands for a flag of height h. */
+export function tri(j: number, h: number) {
+  return j < h / 3 ? PAL.flagOrange : j < (2 * h) / 3 ? PAL.flagWhite : PAL.flagGreen;
+}
+
 function flag(c: PixelCanvas, poleX: number, topY: number, wave: number, w = 14, h = 9) {
   // Fictional "Bongaram Praja Party" flag: orange over white with an original spinning-top emblem.
   for (let i = 0; i < w; i++) {
     const off = Math.round(Math.sin((i / w) * Math.PI * 1.5 + wave) * 1);
-    for (let j = 0; j < h; j++) c.px(poleX + 1 + i, topY + j + off, j < h / 2 ? PAL.flagOrange : PAL.flagWhite);
+    for (let j = 0; j < h; j++) c.px(poleX + 1 + i, topY + j + off, tri(j, h));
   }
   const ex = poleX + 1 + Math.floor(w / 2);
   const ey = topY + Math.floor(h / 2) + Math.round(Math.sin(Math.PI * 0.75 + wave));
-  // spinning top: body + stripe + tip + string loop
-  c.px(ex, ey - 2, PAL.emblem);
-  c.hline(ex - 2, ex + 2, ey - 1, PAL.emblem);
-  c.hline(ex - 2, ex + 2, ey, PAL.emblemHi);
-  c.hline(ex - 1, ex + 1, ey + 1, PAL.emblem);
-  c.px(ex, ey + 2, PAL.emblem);
+  // spinning top (bongaram) emblem – red body, gold band, brown tip, string loop.
+  // Deliberately NOT a wheel/chakra so the party flag can't be mistaken for the national flag.
+  const big = h >= 12;
+  const r = big ? 3 : 2;
+  c.hline(ex - 1, ex + 1, ey - r - 1, "#5a3a1a"); // handle
+  for (let k = -r; k <= r; k++) {
+    const half = r - Math.abs(k) + (k < 0 ? 1 : 0);
+    c.hline(ex - half, ex + half, ey + k, k === 0 ? "#ffd34d" : "#c62828");
+  }
+  c.px(ex, ey + r + 1, "#5a3a1a"); // tip
+  c.px(ex + r + 1, ey - r, "#5a3a1a"); // string
+  c.px(ex + r + 2, ey - r + 1, "#5a3a1a");
   c.vline(poleX, topY - 1, topY + h + 22, PAL.pole);
   c.px(poleX, topY - 2, PAL.button);
 }
@@ -387,14 +399,14 @@ export function characterFrames(): Frame[] {
   frames.push(
     frame("lost-0", (c) => {
       for (let i = 0; i < 26; i++) c.px(OX - 6 + i, OY + 47, PAL.pole);
-      for (let j = 0; j < 4; j++) c.hline(OX - 6, OX + 4, OY + 43 + j, j < 2 ? PAL.flagOrange : PAL.flagWhite);
+      for (let j = 0; j < 3; j++) c.hline(OX - 6, OX + 4, OY + 44 + j, tri(j, 3));
       frontBody(c, "shock", 1, "defeat");
     }),
   );
   frames.push(
     frame("lost-1", (c) => {
       for (let i = 0; i < 26; i++) c.px(OX - 6 + i, OY + 47, PAL.pole);
-      for (let j = 0; j < 4; j++) c.hline(OX - 6, OX + 4, OY + 43 + j, j < 2 ? PAL.flagOrange : PAL.flagWhite);
+      for (let j = 0; j < 3; j++) c.hline(OX - 6, OX + 4, OY + 44 + j, tri(j, 3));
       frontBody(c, "sad", 2, "defeat");
     }),
   );
@@ -457,10 +469,13 @@ export function portraitFrames(): Frame[] {
   return PORTRAIT_FACES.map((face) => {
     const c = new PixelCanvas(32, 32);
     // reuse the in-game head at native size, framed by shoulders
-    c.rect(4, 24, 24, 8, PAL.waist);
-    c.rect(13, 23, 6, 9, PAL.kurta);
-    c.rect(15, 26, 2, 6, PAL.kurtaShade);
-    c.rect(4, 24, 3, 8, PAL.waistHi);
+    c.rect(4, 24, 24, 8, PAL.kurta);
+    c.rect(4, 24, 3, 8, PAL.kurtaHi);
+    c.rect(24, 24, 4, 8, PAL.kurtaShade);
+    c.vline(16, 26, 31, PAL.kurtaShade);
+    c.hline(10, 22, 23, PAL.kanduvaOrange);
+    kanduvaStrip(c, 9, 24, 31, false);
+    kanduvaStrip(c, 20, 24, 31, true);
     headFront(c, 0, 2, face);
     return { name: `face-${face}`, canvas: finish(c) };
   });

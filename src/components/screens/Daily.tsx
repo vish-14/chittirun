@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { dailyChallengeFor, utcDateKey } from "@/game/logic/daily";
 import { getLevel } from "@/game/logic/levels";
+import { ROUTES } from "@/game/logic/routes";
 import type { LevelId } from "@/game/logic/types";
 import { useProfile } from "@/lib/profile";
 import { BgPreview, Button, Panel, ScreenShell } from "../ui";
@@ -32,7 +33,10 @@ export default function Daily({ onBack, onPlay }: { onBack: () => void; onPlay: 
           <p className="text-sm text-cream/80">{d.modifier.description}</p>
           <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
             <dt className="text-cream/60">Level</dt>
-            <dd className="font-bold">{lvl.name}</dd>
+            <dd className="font-bold">
+              {lvl.name}
+              <span className="block text-xs font-normal text-emerald-300">{ROUTES[d.level].name}</span>
+            </dd>
             <dt className="text-cream/60">Target score</dt>
             <dd className="font-bold">{d.targetScore.toLocaleString("en-IN")}</dd>
             <dt className="text-cream/60">Your best today</dt>

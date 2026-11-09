@@ -22,7 +22,23 @@ const securityHeaders = [
   },
 ];
 
-const nextConfig: NextConfig = {
+/**
+ * BUILD_TARGET=app → static export (`out/`) for the Capacitor Android/iOS apps.
+ * Server route handlers are named `route.ts`; restricting pageExtensions to `tsx` leaves them out of the
+ * app bundle, so the app is 100 % offline / local-first with no server dependency.
+ */
+const isApp = process.env.BUILD_TARGET === "app";
+
+const appConfig: NextConfig = {
+  reactStrictMode: true,
+  output: "export",
+  pageExtensions: ["tsx"],
+  images: { unoptimized: true },
+  poweredByHeader: false,
+  env: { NEXT_PUBLIC_PLATFORM: "app" },
+};
+
+const webConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
@@ -39,4 +55,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default isApp ? appConfig : webConfig;

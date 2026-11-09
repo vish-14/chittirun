@@ -4,6 +4,7 @@ import { RunSim, type HudSnapshot, type SimEvent, type SimOptions } from "./logi
 import { autopilot } from "./logic/autopilot";
 import type { GameMode, LevelId } from "./logic/types";
 import type { Outfit } from "./art/character";
+import { hapticImpact } from "@/lib/native";
 
 export interface RunConfig {
   level: LevelId;
@@ -125,11 +126,7 @@ export class GameController {
 
   private vibrate(ms: number) {
     if (this.config.reducedMotion) return;
-    try {
-      navigator.vibrate?.(ms);
-    } catch {
-      /* not supported */
-    }
+    void hapticImpact(ms >= 120);
   }
 
   onEvent(l: Listener) {

@@ -26,8 +26,8 @@ export default function CharacterSelect({ onBack }: { onBack: () => void }) {
         <Sprite key={`${p.outfit}-${anim.id}`} sheet={`chitti-${p.outfit}`} frames={anim.frames} fps={anim.fps} scale={5} alt={`Chitti Naidu ${anim.label} animation`} />
         <p className="font-pixel text-lg font-bold text-saffron">Chitti Naidu</p>
         <p className="text-center text-sm text-cream/80">
-          Fictional Chief Minister. Signature pompadour, neatly trimmed beard, white kurta, orange waistcoat and
-          teal sneakers for emergency sprints. Fuelled by Irani chai and optimism.
+          Fictional Chief Minister. Signature pompadour, neatly trimmed beard, full green kurta, an orange-white-green
+          kanduva on his shoulders and teal sneakers for emergency sprints. Fuelled by Irani chai and optimism.
         </p>
         <div className="flex flex-wrap justify-center gap-1.5" role="group" aria-label="Preview animation">
           {ANIMS.map((a) => (

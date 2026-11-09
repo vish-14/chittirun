@@ -1,5 +1,6 @@
 import { PixelCanvas, shade, text, textWidth, type Frame } from "./painter";
-import { PAL } from "./character";
+import { PAL, tri } from "./character";
+import { hyderabadFrames } from "./hyderabad";
 
 const O = "#1b1020";
 
@@ -410,7 +411,9 @@ const PICKUP_DRAWERS: Record<string, (c: PixelCanvas) => void> = {
 
 // ───────────────────────────── crowd ─────────────────────────────
 
-const SHIRTS = ["#d94f4f", "#3f7fd9", "#f2c53d", "#46a35b", "#9b59b6", "#f07b17"];
+const SHIRTS = ["#d94f4f", "#3f7fd9", "#f2c53d", "#46a35b", "#9b59b6", "#f07b17", "#7ec8f0"];
+/** Variant 6 is a football fan in a sky-blue & white striped jersey. */
+export const CROWD_VARIANTS = 7;
 const SKINS = ["#c98b5a", "#a86a3d", "#e0a878", "#8c5530"];
 
 function person(c: PixelCanvas, v: number, pose: "idle" | "cheer" | "protest" | "chant", f: number) {
@@ -421,6 +424,7 @@ function person(c: PixelCanvas, v: number, pose: "idle" | "cheer" | "protest" | 
   c.rect(4, 15, 2, 7, "#3b3b52");
   c.rect(7, 15, 2, 7, "#3b3b52");
   c.rect(3, 8 + bob, 7, 8, shirt);
+  if (v === 6) for (let i = 3; i < 10; i += 3) c.vline(i, 8 + bob, 15 + bob, "#ffffff");
   c.ellipse(6.5, 5 + bob, 3, 3, skin);
   c.rect(4, 2 + bob, 6, 2, hair);
   if (v % 2) c.rect(3, 3 + bob, 1, 3, hair); // long hair variant
@@ -558,11 +562,12 @@ const ROADSIDE: Record<string, [number, number, (c: PixelCanvas) => void]> = {
   }],
   "rs-flagpole": [28, 64, (c) => {
     c.rect(3, 4, 2, 60, "#9aa0aa");
-    for (let i = 0; i < 20; i++) for (let j = 0; j < 12; j++) c.px(5 + i, 5 + j + Math.round(Math.sin(i / 4) * 1), j < 6 ? PAL.flagOrange : PAL.flagWhite);
-    c.hline(13, 17, 10, PAL.emblem);
-    c.hline(14, 16, 11, PAL.emblem);
-    c.px(15, 9, PAL.emblem);
-    c.px(15, 12, PAL.emblem);
+    for (let i = 0; i < 20; i++) for (let j = 0; j < 12; j++) c.px(5 + i, 5 + j + Math.round(Math.sin(i / 4) * 1), tri(j, 12));
+    c.hline(13, 17, 10, "#c62828");
+    c.hline(13, 17, 11, "#ffd34d");
+    c.hline(14, 16, 12, "#c62828");
+    c.px(15, 9, "#5a3a1a");
+    c.px(15, 13, "#5a3a1a");
   }],
   "rs-files": [32, 30, (c) => fileStack(c)],
 };
@@ -717,7 +722,7 @@ export function propFrames(): Frame[] {
   for (const [name, [w, h, draw]] of Object.entries(OBSTACLE_DRAWERS)) frames.push(make(name, w, h, draw));
   for (let f = 0; f < 4; f++) frames.push(make(`coin-${f}`, 16, 16, (c) => coin(c, f)));
   for (const [name, draw] of Object.entries(PICKUP_DRAWERS)) frames.push(make(name, 16, 16, draw));
-  for (let v = 0; v < 6; v++)
+  for (let v = 0; v < CROWD_VARIANTS; v++)
     for (const pose of ["idle", "cheer", "protest", "chant"] as const)
       for (let f = 0; f < 2; f++) frames.push(make(`crowd-${v}-${pose}-${f}`, 18, 22, (c) => person(c, v, pose, f)));
   for (const [name, [w, h, draw]] of Object.entries(ROADSIDE)) frames.push(make(name, w, h, draw));
@@ -725,5 +730,6 @@ export function propFrames(): Frame[] {
     for (let f = 0; f < 2; f++) frames.push(make(`boss-${lvl}-${f}`, 80, 80, (c) => draw(c, f)));
   for (const [lvl, draw] of Object.entries(SHOTS)) frames.push(make(`shot-${lvl}`, 20, 20, draw));
   for (const [name, [w, h, draw, ol]] of Object.entries(FX)) frames.push(make(name, w, h, draw, ol ?? true));
+  frames.push(...hyderabadFrames());
   return frames;
 }

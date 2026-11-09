@@ -37,6 +37,9 @@
   ],
   "exclude": [
     "node_modules",
-    "infra/cdk.out"
+    "infra/lambda",
+    "out",
+    "android",
+    "ios"
   ]
 }

@@ -991,7 +991,7 @@ export class RunSim {
       }
     }
     // jams outside the traffic mission would be unclearable; swap them for autos
-    for (const r of row) if (r.kind === "jam" && due !== "jam") r.kind = "auto";
+    for (const r of row) if (r.kind === "jam" && due !== "jam" && this.level.id !== "traffic") r.kind = "auto";
     // fairness: never three lane-blocking obstacles in a row
     const blockers = row.filter((r) => OBSTACLES[r.kind].avoid === "lane");
     if (blockers.length >= LANES) row.pop();

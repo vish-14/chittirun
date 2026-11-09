@@ -30,3 +30,21 @@ describe("sprite sheets", () => {
     }
   });
 });
+
+import { ROUTES, routeProgress, stopSlug, STOP_SPACING } from "@/game/logic/routes";
+
+describe("Hyderabad routes & street art", () => {
+  const f = buildAtlases().props.frames;
+  it("has a green signboard for every real stop on every route", () => {
+    for (const r of Object.values(ROUTES)) for (const s of r.stops) expect(f[`sign-${stopSlug(s)}`], s).toBeDefined();
+  });
+  it("has paan shops, malls, metro, broken lights and football fan art", () => {
+    for (const k of ["rs-paan", "rs-paan2", "rs-mall", "rs-irani", "rs-biryani", "rs-metro-pillar", "rs-lamp-broken", "rs-lamp-broken-on", "rs-signal-broken", "rs-poster-football", "rs-poster-football2", "rs-fanflags", "rs-football-kids", "fx-metro-train", "crowd-6-cheer-0"])
+      expect(f[k], k).toBeDefined();
+  });
+  it("tracks progress along the route and loops", () => {
+    expect(routeProgress("traffic", 0)).toMatchObject({ current: "Ameerpet", next: "Punjagutta" });
+    expect(routeProgress("traffic", STOP_SPACING + 1).current).toBe("Punjagutta");
+    expect(routeProgress("traffic", STOP_SPACING * 6).current).toBe("Ameerpet");
+  });
+});

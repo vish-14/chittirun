@@ -234,17 +234,18 @@ const FONT: Record<string, string> = {
   "%": "101001010100101", "+": "000010111010000", " ": "000000000000000", ":": "000010000010000",
 };
 
-export function text(c: PixelCanvas, x: number, y: number, str: string, color: string) {
+export function text(c: PixelCanvas, x: number, y: number, str: string, color: string, scale = 1) {
   let cx = x;
   for (const ch of str.toUpperCase()) {
     const g = FONT[ch] ?? FONT["?"];
-    for (let j = 0; j < 5; j++) for (let i = 0; i < 3; i++) if (g[j * 3 + i] === "1") c.px(cx + i, y + j, color);
-    cx += 4;
+    for (let j = 0; j < 5; j++)
+      for (let i = 0; i < 3; i++) if (g[j * 3 + i] === "1") c.rect(cx + i * scale, y + j * scale, scale, scale, color);
+    cx += 4 * scale;
   }
 }
 
-export function textWidth(str: string) {
-  return str.length * 4 - 1;
+export function textWidth(str: string, scale = 1) {
+  return (str.length * 4 - 1) * scale;
 }
 
 export interface Frame {

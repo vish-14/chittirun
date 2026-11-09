@@ -17,7 +17,12 @@ export default function Menu({ nav }: { nav: Nav }) {
           Chitti Naidu
           <span className="block text-cream">Run</span>
         </h1>
-        <p className="font-pixel mt-2 text-sm uppercase text-cream/80">The Great CM Escape</p>
+        <div className="mx-auto mt-2 flex h-1.5 w-40 overflow-hidden rounded" aria-hidden>
+          <span className="flex-1 bg-saffron" />
+          <span className="flex-1 bg-cream" />
+          <span className="flex-1 bg-[#138a3d]" />
+        </div>
+        <p className="font-pixel mt-2 text-sm uppercase text-emerald-400">The Great CM Escape</p>
       </div>
 
       <div className="flex items-end gap-2">

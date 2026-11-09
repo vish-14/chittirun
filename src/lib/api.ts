@@ -1,5 +1,6 @@
 import type { RunSummary } from "@/game/logic/scoring";
 import type { GameMode, LevelId } from "@/game/logic/types";
+import { API_BASE, ONLINE_ENABLED } from "./platform";
 
 export interface StartedRun {
   runId: string;
@@ -7,7 +8,9 @@ export interface StartedRun {
   board: string;
 }
 
-async function post<T>(url: string, body: unknown, timeoutMs = 6000): Promise<T | null> {
+async function post<T>(path: string, body: unknown, timeoutMs = 6000): Promise<T | null> {
+  if (!ONLINE_ENABLED) return null; // local-only app build
+  const url = API_BASE + path;
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), timeoutMs);
   try {
@@ -43,8 +46,9 @@ export interface BoardEntry {
 }
 
 export async function fetchLeaderboard(board: string): Promise<BoardEntry[] | null> {
+  if (!ONLINE_ENABLED) return null;
   try {
-    const r = await fetch(`/api/leaderboard?board=${encodeURIComponent(board)}&limit=20`, { cache: "no-store" });
+    const r = await fetch(`${API_BASE}/api/leaderboard?board=${encodeURIComponent(board)}&limit=20`, { cache: "no-store" });
     if (!r.ok) return null;
     const j = (await r.json()) as { entries?: BoardEntry[] };
     return j.entries ?? [];

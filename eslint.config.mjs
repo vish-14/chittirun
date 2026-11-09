@@ -2,7 +2,7 @@ import next from "eslint-config-next";
 
 const config = [
   ...next,
-  { ignores: [".next/**", "node_modules/**", "public/**", "playwright-report/**", "test-results/**", "infra/**"] },
+  { ignores: [".next/**", "node_modules/**", "public/**", "playwright-report/**", "test-results/**", "infra/**", "out/**", "android/**", "ios/**"] },
 ];
 
 export default config;

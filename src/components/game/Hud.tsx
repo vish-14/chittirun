@@ -4,6 +4,8 @@ import { STAGE_INFO } from "@/game/logic/governance";
 import type { HudSnapshot } from "@/game/logic/sim";
 import type { GovernanceStage, PowerUpKind } from "@/game/logic/types";
 import { Meter, Sprite } from "../ui";
+import { routeProgress } from "@/game/logic/routes";
+import type { LevelId } from "@/game/logic/types";
 
 const STAGE_FACE: Record<GovernanceStage, string> = {
   control: "face-smile",
@@ -15,8 +17,9 @@ const STAGE_FACE: Record<GovernanceStage, string> = {
 
 const fmtTime = (s: number) => `${Math.floor(s / 60)}:${String(Math.ceil(s) % 60).padStart(2, "0")}`;
 
-export default function Hud({ s, outfit, onPause }: { s: HudSnapshot; outfit: string; onPause: () => void }) {
+export default function Hud({ s, outfit, level, onPause }: { s: HudSnapshot; outfit: string; level: LevelId; onPause: () => void }) {
   const stage = STAGE_INFO[s.stage];
+  const route = routeProgress(level, s.distance);
   const powerColor = s.power >= 70 ? "#22c55e" : s.power >= 40 ? "#eab308" : s.power >= 15 ? "#f97316" : "#ef4444";
   return (
     <div className="pointer-events-none absolute inset-0 flex flex-col p-2 text-cream" data-testid="hud">
@@ -54,7 +57,10 @@ export default function Hud({ s, outfit, onPause }: { s: HudSnapshot; outfit: st
               <Meter label="Public Approval" value={s.approval} color="#38bdf8" icon="👍" />
             </div>
           </div>
-          <div className="mt-1 flex justify-end">
+          <div className="mt-1 flex items-center justify-between gap-1">
+            <span className="font-pixel truncate rounded bg-emerald-800/85 px-1.5 py-0.5 text-[10px] font-bold text-white" data-testid="route">
+              📍 {route.current} → {route.next} {Math.ceil(route.toNext)}m
+            </span>
             <span
               data-testid="stage"
               data-stage={s.stage}

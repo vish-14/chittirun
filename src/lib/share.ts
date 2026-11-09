@@ -8,6 +8,8 @@ export function whatsappUrl(text: string, url?: string): string {
 }
 
 export async function nativeShare(text: string, url?: string): Promise<boolean> {
+  const { nativeShareSheet } = await import("./native");
+  if (await nativeShareSheet("CHITTI NAIDU RUN", text, url)) return true;
   try {
     if (typeof navigator !== "undefined" && navigator.share) {
       await navigator.share({ title: "CHITTI NAIDU RUN", text, url });
