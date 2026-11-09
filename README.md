@@ -38,11 +38,11 @@ potholes, waterlogging and traffic jams on every route, with the public asking t
 
 **Broken roads** – giant pothole craters (jump them), broken slabs with exposed rebar, bigger potholes, and long
 damaged stretches where the asphalt gives way to dirt and gravel, with cracks and patchwork painted across every road.
-**HIDRA duo** – stop a demolition and the public cheers (+10 % approval), but Mr. Ranga and Tondal Reddy storm out
+**HIDRA duo** – stop a demolition and the public cheers (+10 % approval), but Mr. Ranga and Tondal storm out
 of the HIDRA van furious (−4 % CM Power).
 
-**Street politics & water scarcity** – walls plastered with "CM DOWN DOWN", "WE WANT KCR" and "VOTE FOR CAR"
-posters (text + generic car icon only), crowds chanting "CM DOWN DOWN!" in a crisis, women with pots queuing at dry
+**Street politics & water scarcity** – walls plastered with "CM DOWN DOWN", "WE WANT KCR" and pink "JAI TELANGANA"
+posters (pixel text only), crowds chanting "CM DOWN DOWN!" in a crisis, women with pots queuing at dry
 taps ("NO WATER") and a pot queue crossing the road as an obstacle, and packed apartments, commercial complexes and
 malls standing shoulder to shoulder on both sides of every route.
 
@@ -133,6 +133,6 @@ provisioned automatically – read the plan and cost estimate (≈ $4–5/month 
 
 A parody / political-satire game. Chitti Naidu is a fictional cartoon character; missions and events are comedy, not
 factual claims or allegations. Real places, agencies (HIDRA) and public figures named on posters ("WE WANT KCR",
-"VOTE FOR CAR", "CM DOWN DOWN") are used only as political commentary – no likenesses, photos or official logos are
+"JAI TELANGANA", "CM DOWN DOWN") are used only as political commentary – no likenesses, photos or official logos are
 used, and nobody named has endorsed the game. All art and music are original – see
 [`docs/ASSETS_AND_LICENSES.md`](docs/ASSETS_AND_LICENSES.md).

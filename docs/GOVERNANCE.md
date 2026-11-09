@@ -18,7 +18,7 @@ unit tests. Everything is fictional game balance.
 | Boss defeated / escaped | +4 / 0 | +6 / −3 |
 | Every 50 coins | – | +1 |
 | Final challenge won | +35 | +20 (+ life, reward, 5000 pts) |
-| HIDRA demolition stopped (3 stay orders in time) – public happy, Mr. Ranga & Tondal Reddy angry | −4 | +10 (+1500 pts) |
+| HIDRA demolition stopped (3 stay orders in time) – public happy, Mr. Ranga & Tondal angry | −4 | +10 (+1500 pts) |
 | HIDRA demolition not stopped (building demolished) | −10 | −8 |
 
 ## Stages

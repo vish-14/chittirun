@@ -39,7 +39,7 @@ describe("Hyderabad routes & street art", () => {
     for (const r of Object.values(ROUTES)) for (const s of r.stops) expect(f[`sign-${stopSlug(s)}`], s).toBeDefined();
   });
   it("has paan shops, malls, metro, broken lights and football fan art", () => {
-    for (const k of ["rs-paan", "rs-paan2", "rs-mall", "rs-irani", "rs-biryani", "rs-metro-pillar", "rs-lamp-broken", "rs-lamp-broken-on", "rs-signal-broken", "rs-poster-football", "rs-poster-football2", "rs-fanflags", "rs-football-kids", "fx-metro-train", "crowd-6-cheer-0", "rs-poster-cmdown", "rs-poster-wewant", "rs-poster-votecar", "rs-poster-wall", "rs-water-queue", "rs-dry-tap", "bd-apartment", "bd-apartment2", "bd-apartment3", "bd-complex", "bd-mall2", "dm-house", "dm-rubble", "dm-van", "dm-jcb-0", "tk-stayOrder", "dc-crack", "dc-crack2", "dc-patch", "dc-gravel", "dc-hole", "np-ranga-0", "np-ranga-1", "np-tondal-0", "np-tondal-1"])
+    for (const k of ["rs-paan", "rs-paan2", "rs-mall", "rs-irani", "rs-biryani", "rs-metro-pillar", "rs-lamp-broken", "rs-lamp-broken-on", "rs-signal-broken", "rs-poster-football", "rs-poster-football2", "rs-fanflags", "rs-football-kids", "fx-metro-train", "crowd-6-cheer-0", "rs-poster-cmdown", "rs-poster-wewant", "rs-poster-jai", "rs-poster-wall", "rs-water-queue", "rs-dry-tap", "bd-apartment", "bd-apartment2", "bd-apartment3", "bd-complex", "bd-mall2", "dm-house", "dm-rubble", "dm-van", "dm-jcb-0", "tk-stayOrder", "dc-crack", "dc-crack2", "dc-patch", "dc-gravel", "dc-hole", "np-ranga-0", "np-ranga-1", "np-tondal-0", "np-tondal-1"])
       expect(f[k], k).toBeDefined();
   });
   it("tracks progress along the route and loops", () => {

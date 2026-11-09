@@ -16,7 +16,7 @@ export const GOV_RULES = {
   bossEscaped: { power: 0, approval: -3 },
   coinsPerApprovalPoint: 50,
   finalChallengeWin: { power: 35, approval: 20 },
-  // public is happy, but Mr. Ranga & Tondal Reddy (HIDRA) are furious → power dips
+  // public is happy, but Mr. Ranga & Tondal (HIDRA) are furious → power dips
   demolitionStopped: { power: -4, approval: 10 },
   demolitionDone: { power: -10, approval: -8 },
 } as const;

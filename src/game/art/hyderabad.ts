@@ -350,22 +350,19 @@ function posterWeWant(c: PixelCanvas) {
   text(c, center(36, "BACK!"), 43, "BACK!", "#ffffff");
 }
 
-function carIcon(c: PixelCanvas, x: number, y: number, col: string) {
-  c.rect(x + 3, y, 10, 4, col);
-  c.rect(x, y + 4, 17, 5, col);
-  c.rect(x + 5, y + 1, 3, 3, "#bfe6ff");
-  c.rect(x + 9, y + 1, 3, 3, "#bfe6ff");
-  c.ellipse(x + 4, y + 9, 2, 2, "#1b1020");
-  c.ellipse(x + 13, y + 9, 2, 2, "#1b1020");
-}
-
-function posterVoteCar(c: PixelCanvas) {
+function posterJai(c: PixelCanvas) {
   pasted(c, 36, 50, PINK);
   c.rect(2, 2, 32, 46, "#f25fa8");
-  text(c, center(36, "VOTE"), 5, "VOTE", "#ffffff");
-  text(c, center(36, "FOR"), 12, "FOR", "#ffffff");
-  carIcon(c, 9, 20, "#ffffff");
-  text(c, center(36, "CAR", 2), 34, "CAR", "#fff36b", 2);
+  c.hline(4, 31, 5, "#ffffff");
+  text(c, center(36, "JAI", 3), 9, "JAI", "#fff36b", 3);
+  c.hline(4, 31, 27, "#ffffff");
+  text(c, 0, 31, "TELANGANA", "#ffffff");
+  c.hline(4, 31, 39, "#ffffff");
+  // little raised fists of celebration
+  for (const x of [9, 17, 25]) {
+    c.rect(x, 42, 3, 3, "#e0b08a");
+    c.vline(x + 1, 45, 46, "#ffffff");
+  }
 }
 
 /** A wall plastered with overlapping posters – the classic Hyderabad compound wall. */
@@ -375,7 +372,7 @@ function posterWall(c: PixelCanvas) {
   for (let x = 0; x < 72; x += 9) c.vline(x, 8, 39, "#bdb29e");
   const p1 = new PixelCanvas(36, 50); posterCmDown(p1);
   const p2 = new PixelCanvas(36, 50); posterWeWant(p2);
-  const p3 = new PixelCanvas(36, 50); posterVoteCar(p3);
+  const p3 = new PixelCanvas(36, 50); posterJai(p3);
   // half-size pastes (nearest-neighbour downscale)
   const paste = (src: PixelCanvas, ox: number, oy: number) => {
     for (let y = 0; y < 25; y++)
@@ -555,7 +552,7 @@ function ranga(c: PixelCanvas, f: number) {
   steam(c, f);
 }
 
-/** Tondal Reddy: curly hair, full beard, red tilak, light-blue shirt, raised fist. */
+/** Tondal: curly hair, full beard, red tilak, light-blue shirt, raised fist. */
 function tondal(c: PixelCanvas, f: number) {
   chibiBody(c, f, "#9cc4e8", "#7aa6d0", SKIN_T, true);
   const b = f;
@@ -590,7 +587,7 @@ const ROADSIDE: Record<string, [number, number, (c: PixelCanvas) => void]> = {
   "np-tondal-1": [28, 40, (c) => tondal(c, 1)],
   "rs-poster-cmdown": [36, 50, posterCmDown],
   "rs-poster-wewant": [36, 50, posterWeWant],
-  "rs-poster-votecar": [36, 50, posterVoteCar],
+  "rs-poster-jai": [36, 50, posterJai],
   "rs-poster-wall": [72, 40, posterWall],
   "ob-potQueue": [52, 32, potQueue],
   "rs-water-queue": [60, 32, waterQueue],

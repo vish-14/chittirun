@@ -69,7 +69,7 @@ export default function HowToPlay({ onBack }: { onBack: () => void }) {
         <p className="text-sm text-cream/80">
           Mid-run, a HIDRA van and a JCB show up at a family&apos;s house. You get <b>5–10 seconds</b> (less as the run goes on):
           grab <b>3 🛑 STAY ORDERS</b> to stop the demolition: the public is happy (<b>approval +10%</b>, +1500 pts) – but
-          Mr. Ranga and Tondal Reddy storm out of the HIDRA van furious (<b>CM Power −4%</b>). Too slow and the building is
+          Mr. Ranga and Tondal storm out of the HIDRA van furious (<b>CM Power −4%</b>). Too slow and the building is
           demolished – <b>CM Power −10%</b>, approval −8%.
         </p>
       </Panel>

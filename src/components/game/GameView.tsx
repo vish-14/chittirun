@@ -157,7 +157,7 @@ export default function GameView({
         case "demolitionStopped":
           toast({ kind: "success", title: "Demolition stopped!", detail: "Public is happy! Approval +10% · +1500" });
           setTimeout(
-            () => toast({ kind: "fail", title: "😠 Ranga & Tondal Reddy angry!", detail: "They storm out of the HIDRA van · CM Power −4%" }),
+            () => toast({ kind: "fail", title: "😠 Ranga & Tondal angry!", detail: "They storm out of the HIDRA van · CM Power −4%" }),
             900,
           );
           break;

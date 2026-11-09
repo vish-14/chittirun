@@ -350,7 +350,7 @@ export class RunScene extends Phaser.Scene {
     if (saved) {
       this.floatText("DEMOLITION STOPPED!", CX, HORIZON + 20, "#7bdc7b");
       d.jcb.setFrame("dm-jcb-0");
-      // Mr. Ranga and Tondal Reddy storm out of the HIDRA van, furious
+      // Mr. Ranga and Tondal storm out of the HIDRA van, furious
       const duo = (["ranga", "tondal"] as const).map((who, i) => {
         const s = this.add.sprite(d.van.x + 10, d.van.y - 6, "props", `np-${who}-0`).setOrigin(0.5, 1).setScale(1.8).setDepth(1990);
         // jump out, then storm down the kerb towards the CM (below the toast area)
