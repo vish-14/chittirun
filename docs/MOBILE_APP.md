@@ -70,8 +70,13 @@ first store upload** – it can never change afterwards. To rename, change it th
   people to vote for a party may be treated as political advertising that needs certification. Simplest mitigation:
   the poster texts live in one place (`src/game/art/hyderabad.ts`, `posterWeWant` / `posterVoteCar`) and can be
   swapped for neutral slogans in a store build.
+* **Caricatures of real people:** "Mr. Ranga" and "Tondal Reddy" are chibi caricatures based on real public figures
+  (drawn from general traits, not traced from photos). Indian courts increasingly enforce *personality rights*, and
+  a nickname like "Tondal" can be argued to be demeaning. Keep them clearly comic (they only get angry – no
+  wrongdoing is shown or claimed), and they are isolated in `ranga()` / `tondal()` in `src/game/art/hyderabad.ts` if
+  you need to swap them for fictional officials in a store build.
 * **Heads-up:** an open palm on an orange-white-green flag is very close to the registered election symbol and flag
-  of a real party (INC), and the HYDRA demolition event references a real Hyderabad agency. Combined, players will
+  of a real party (INC), and the HIDRA demolition event references a real Hyderabad agency. Combined, players will
   read the game as satire of a real government rather than a fictional one. Political satire is generally allowed
   (Apple 1.1.1 exempts professional political satire), but keep it clearly comedic, avoid factual claims or
   allegations, keep the fictional disclaimer, and consider a quick legal review before publishing. The emblem is a

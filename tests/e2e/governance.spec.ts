@@ -91,7 +91,7 @@ test("losing all lives shows game over with a verified score", async ({ page }) 
   await expect(page.getByText("Local high scores")).toBeVisible();
 });
 
-test("HYDRA demolition: stopped with stay orders, or the building falls and power drops", async ({ page }) => {
+test("HIDRA demolition: stopped with stay orders, or the building falls and power drops", async ({ page }) => {
   await startEndless(page);
   await clearRoad(page);
   await sim(page, (c) => {

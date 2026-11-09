@@ -245,7 +245,7 @@ function footballKids(c: PixelCanvas) {
   c.hline(0, 37, 20, "#8a7a5a");
 }
 
-// ───────────────────────────── HYDRA demolition drive ─────────────────────────────
+// ───────────────────────────── HIDRA demolition drive ─────────────────────────────
 
 function house(c: PixelCanvas) {
   // a family's two-storey home with a balcony, washing line and a water drum
@@ -282,7 +282,7 @@ function hydraVan(c: PixelCanvas) {
   c.rect(40, 4, 14, 12, "#f5f5f5"); // cab
   c.rect(43, 6, 9, 6, "#8fc8de");
   c.rect(2, 14, 52, 4, "#2b6cd4");
-  text(c, 7, 9, "HYDRA", "#2b6cd4");
+  text(c, 7, 9, "HIDRA", "#2b6cd4");
   c.rect(16, 2, 8, 4, "#e23b2e"); // siren bar
   c.rect(24, 2, 6, 4, "#2b6cd4");
   c.ellipse(12, 25, 4, 4, "#222");
@@ -494,7 +494,100 @@ function mall2(c: PixelCanvas) {
   text(c, 58, 45, "COURT", "#ffffff");
 }
 
+// ───────────────────── the HIDRA duo (satirical chibi caricatures) ─────────────────────
+
+const SKIN_R = "#b9825a";
+const SKIN_T = "#a8704a";
+
+function chibiBody(c: PixelCanvas, f: number, shirt: string, shirtShade: string, skin: string, fist: boolean) {
+  const bob = f;
+  c.rect(9, 30, 4, 8, "#2a2a38"); // trousers
+  c.rect(15, 30, 4, 8, "#2a2a38");
+  c.rect(8, 37 - (f ? 1 : 0), 6, 2, "#1b1020"); // shoes – stomping
+  c.rect(14, 37 - (f ? 0 : 1), 6, 2, "#1b1020");
+  c.rect(7, 19 + bob, 14, 12, shirt); // shirt
+  c.rect(17, 20 + bob, 4, 11, shirtShade);
+  c.vline(14, 20 + bob, 30 + bob, shirtShade); // placket
+  c.rect(12, 18 + bob, 4, 2, shirt); // collar
+  if (fist) {
+    c.line(20, 21 + bob, 24, 12 + bob - f, shirt, 3); // raised angry fist
+    c.rect(23, 9 + bob - f, 3, 3, skin);
+    c.line(8, 21 + bob, 6, 29 + bob, shirt, 3);
+    c.rect(5, 29 + bob, 3, 2, skin);
+  } else {
+    c.line(8, 21 + bob, 5, 29 + bob, shirt, 3); // arms akimbo, fuming
+    c.line(20, 21 + bob, 23, 29 + bob, shirt, 3);
+    c.rect(4, 29 + bob, 3, 2, skin);
+    c.rect(22, 29 + bob, 3, 2, skin);
+  }
+}
+
+function steam(c: PixelCanvas, f: number) {
+  // anger steam puffs + vein mark
+  c.px(3, 3 + f, "#ffffff");
+  c.px(2, 1 + f, "#ffffff");
+  c.px(25, 2 - f + 1, "#ffffff");
+  c.px(26, 0 + f, "#ffffff");
+}
+
+/** Mr. Ranga: side-parted hair, glasses, thick moustache, cream office shirt with pen, silver watch. */
+function ranga(c: PixelCanvas, f: number) {
+  chibiBody(c, f, "#efe6d2", "#d2c6ae", SKIN_R, false);
+  c.vline(10, 22 + f, 24 + f, "#2f6fd6"); // pocket pen
+  c.rect(22, 27 + f, 2, 2, "#c8ccd4"); // silver watch
+  const b = f;
+  c.ellipse(14, 11 + b, 7, 7.5, SKIN_R); // head
+  c.ellipse(14, 5 + b, 7.5, 3.5, "#1f1b26"); // hair, side parting
+  c.rect(7, 5 + b, 2, 6, "#1f1b26");
+  c.rect(20, 5 + b, 2, 5, "#1f1b26");
+  c.hline(9, 13, 4 + b, "#3f3a52");
+  // angry brows over glasses
+  c.line(8, 8 + b, 12, 10 + b, "#1f1b26");
+  c.line(20, 8 + b, 16, 10 + b, "#1f1b26");
+  for (const ex of [9, 16]) {
+    c.rect(ex, 10 + b, 4, 3, "#8a8f99"); // glasses frame
+    c.rect(ex + 1, 11 + b, 2, 1, "#ffffff");
+    c.px(ex + 1 + (ex === 9 ? 1 : 0), 11 + b, "#1b1020");
+  }
+  c.hline(13, 15, 11 + b, "#8a8f99"); // bridge
+  c.rect(10, 15 + b, 9, 2, "#1f1b26"); // thick moustache
+  c.hline(11, 17, 18 + b, "#6e2323"); // frown
+  steam(c, f);
+}
+
+/** Tondal Reddy: curly hair, full beard, red tilak, light-blue shirt, raised fist. */
+function tondal(c: PixelCanvas, f: number) {
+  chibiBody(c, f, "#9cc4e8", "#7aa6d0", SKIN_T, true);
+  const b = f;
+  c.ellipse(14, 11 + b, 7, 7.5, SKIN_T);
+  // curly hair: bumpy top
+  for (let i = 0; i < 6; i++) c.ellipse(8 + i * 2.4, 4.5 + b + (i % 2), 2.2, 2.2, "#1a1620");
+  c.rect(7, 5 + b, 2, 6, "#1a1620");
+  c.rect(20, 5 + b, 2, 6, "#1a1620");
+  c.vline(14, 7 + b, 9 + b, "#d42a2a"); // tilak
+  // full trimmed beard
+  for (let y = 13; y <= 19; y++)
+    for (let x = 7; x <= 21; x++) {
+      const dx = (x - 14) / 7.4;
+      const dy = (y - 11) / 8;
+      if (dx * dx + dy * dy <= 1 && (y >= 15 || x <= 8 || x >= 20)) c.px(x, y + b, "#2a2026");
+    }
+  c.line(8, 9 + b, 12, 10 + b, "#1a1620"); // angry brows
+  c.line(20, 9 + b, 16, 10 + b, "#1a1620");
+  c.rect(10, 11 + b, 2, 2, "#ffffff");
+  c.rect(16, 11 + b, 2, 2, "#ffffff");
+  c.px(11, 12 + b, "#1b1020");
+  c.px(16, 12 + b, "#1b1020");
+  c.ellipse(14, 16.5 + b, 2.2, 1.4, "#6e2323"); // shouting
+  c.hline(13, 15, 16 + b, "#ffffff");
+  steam(c, f);
+}
+
 const ROADSIDE: Record<string, [number, number, (c: PixelCanvas) => void]> = {
+  "np-ranga-0": [28, 40, (c) => ranga(c, 0)],
+  "np-ranga-1": [28, 40, (c) => ranga(c, 1)],
+  "np-tondal-0": [28, 40, (c) => tondal(c, 0)],
+  "np-tondal-1": [28, 40, (c) => tondal(c, 1)],
   "rs-poster-cmdown": [36, 50, posterCmDown],
   "rs-poster-wewant": [36, 50, posterWeWant],
   "rs-poster-votecar": [36, 50, posterVoteCar],

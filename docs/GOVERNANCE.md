@@ -18,8 +18,8 @@ unit tests. Everything is fictional game balance.
 | Boss defeated / escaped | +4 / 0 | +6 / −3 |
 | Every 50 coins | – | +1 |
 | Final challenge won | +35 | +20 (+ life, reward, 5000 pts) |
-| HYDRA demolition stopped (3 stay orders in time) | +4 | +6 (+1500 pts) |
-| HYDRA demolition not stopped (building demolished) | −10 | −8 |
+| HIDRA demolition stopped (3 stay orders in time) – public happy, Mr. Ranga & Tondal Reddy angry | −4 | +10 (+1500 pts) |
+| HIDRA demolition not stopped (building demolished) | −10 | −8 |
 
 ## Stages
 | Power | Stage | Effects |
@@ -36,12 +36,17 @@ progress counter and countdown, rewards and penalties. Targets grow up to +30 % 
 run goes on; *Relaxed mode* adds +25 % time. The spawner guarantees ≈1.7× the needed tokens arrive before the
 deadline, always in a lane that is not blocked.
 
-## HYDRA demolition alerts
-Every ~55–80 s (first at ~32 s) a HYDRA van and a JCB arrive at a family's house by the road. The CM has
+## HIDRA demolition alerts
+Every ~55–80 s (first at ~32 s) a HIDRA van and a JCB arrive at a family's house by the road. The CM has
 **10 s early in a run, shrinking to 6 s** (+2 s in relaxed mode) to collect **3 🛑 stay orders**, which spawn in
 reachable lanes that are clear of obstacles. Success saves the home; failure shows the house collapsing and costs
 power. The event never overlaps a boss and is cancelled (no penalty) if the no-confidence motion starts. Balance probe:
 a skilled bot stops 147/149 alerts, a weak bot ~57 %.
+
+## Broken roads
+Craters (2.6 m, jump), broken slabs with rebar (jump), bigger potholes, and deterministic damaged stretches (~19 m
+blocks; 45 % of Pothole Paradise, 28 % elsewhere) with surface cracks, patches and gravel. Tanker Shield ploughs
+through all ground hazards.
 
 ## City problems everywhere
 Every route now mixes potholes, waterlogged roads and traffic jams with its own hazards. Hitting one triggers a

@@ -32,9 +32,14 @@ that changes sky, weather, crowds (cheering → protesting), music (tempo/minor 
 a final no-confidence challenge with three random objectives; a six-chapter campaign with completed/pending/failed
 missions. Full rules: [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 
-**HYDRA demolition alerts** – mid-run, a HYDRA van and a JCB start demolishing a family's house; Chitti has 5–10
+**HIDRA demolition alerts** – mid-run, a HIDRA van and a JCB start demolishing a family's house; Chitti has 5–10
 seconds to grab 3 🛑 stay orders, or the building comes down (−10 % CM Power). **City problems everywhere** –
 potholes, waterlogging and traffic jams on every route, with the public asking the CM questions about each one.
+
+**Broken roads** – giant pothole craters (jump them), broken slabs with exposed rebar, bigger potholes, and long
+damaged stretches where the asphalt gives way to dirt and gravel, with cracks and patchwork painted across every road.
+**HIDRA duo** – stop a demolition and the public cheers (+10 % approval), but Mr. Ranga and Tondal Reddy storm out
+of the HIDRA van furious (−4 % CM Power).
 
 **Street politics & water scarcity** – walls plastered with "CM DOWN DOWN", "WE WANT KCR" and "VOTE FOR CAR"
 posters (text + generic car icon only), crowds chanting "CM DOWN DOWN!" in a crisis, women with pots queuing at dry
@@ -127,7 +132,7 @@ provisioned automatically – read the plan and cost estimate (≈ $4–5/month 
 ## Disclaimer
 
 A parody / political-satire game. Chitti Naidu is a fictional cartoon character; missions and events are comedy, not
-factual claims or allegations. Real places, agencies (HYDRA) and public figures named on posters ("WE WANT KCR",
+factual claims or allegations. Real places, agencies (HIDRA) and public figures named on posters ("WE WANT KCR",
 "VOTE FOR CAR", "CM DOWN DOWN") are used only as political commentary – no likenesses, photos or official logos are
 used, and nobody named has endorsed the game. All art and music are original – see
 [`docs/ASSETS_AND_LICENSES.md`](docs/ASSETS_AND_LICENSES.md).

@@ -19,6 +19,8 @@ export type ObstacleKind =
   | "redTape"
   | "boomGate"
   | "potQueue"
+  | "crater"
+  | "brokenSlab"
   | "bossShot";
 
 export type PowerUpKind = "chai" | "biryani" | "metro" | "fileCollector" | "rocket" | "tankerShield";

@@ -153,7 +153,7 @@ function DemolitionCard({ d }: { d: NonNullable<HudSnapshot["demolition"]> }) {
     >
       <div className="rounded bg-[#f5d01b] px-1">
         <div className="font-pixel flex justify-between text-[11px] font-black uppercase">
-          <span>🚧 HYDRA demolition!</span>
+          <span>🚧 HIDRA demolition!</span>
           <span data-testid="demolition-timer">⏱ {d.timeLeft.toFixed(1)}s</span>
         </div>
         <div className="text-[11px] font-bold">

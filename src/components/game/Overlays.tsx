@@ -122,12 +122,12 @@ export interface Toast {
 export function Toasts({ toasts }: { toasts: Toast[] }) {
   const latest = toasts.slice(-2);
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-[42%] z-10 flex flex-col items-center gap-2" aria-live="polite">
+    <div className="pointer-events-none absolute inset-x-0 top-[40%] z-10 flex flex-col items-end gap-2 pr-2" aria-live="polite">
       {latest.map((t) => (
         <div
           key={t.id}
           data-testid={`toast-${t.kind}`}
-          className={`animate-stamp rounded-md border-4 px-4 py-2 text-center shadow-[0_4px_0_#000] ${
+          className={`animate-stamp max-w-[68%] rounded-md border-4 px-3 py-1.5 text-center shadow-[0_4px_0_#000] ${
             t.kind === "success"
               ? "border-emerald-300 bg-emerald-600"
               : t.kind === "fail"
@@ -139,7 +139,7 @@ export function Toasts({ toasts }: { toasts: Toast[] }) {
                     : "border-cream bg-ink/90"
           }`}
         >
-          <div className="font-pixel text-base font-black uppercase">{t.title}</div>
+          <div className="font-pixel text-sm font-black uppercase leading-tight">{t.title}</div>
           {t.detail && <div className="text-xs font-semibold">{t.detail}</div>}
         </div>
       ))}

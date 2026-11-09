@@ -26,6 +26,8 @@ export const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
   fileStack: { avoid: "lane", length: 1.6, vz: 0, label: "Pending-file tower" },
   redTape: { avoid: "slide", length: 1.0, vz: 0, label: "Red tape" },
   boomGate: { avoid: "slide", length: 1.0, vz: 0, label: "Security boom gate" },
+  crater: { avoid: "jump", length: 2.6, vz: 0, label: "Giant pothole crater" },
+  brokenSlab: { avoid: "jump", length: 1.4, vz: 0, label: "Broken road slab" },
   potQueue: { avoid: "lane", length: 1.6, vz: 0, label: "Water queue crossing the road" },
   bossShot: { avoid: "lane", length: 1.6, vz: 9, label: "Boss attack" },
 };
@@ -61,5 +63,5 @@ export const TOKENS: Record<TokenKind, { name: string }> = {
 };
 
 export function isGroundHazard(kind: ObstacleKind): boolean {
-  return kind === "pothole" || kind === "puddle" || kind === "speedBreaker" || kind === "pipe";
+  return kind === "pothole" || kind === "puddle" || kind === "speedBreaker" || kind === "pipe" || kind === "crater" || kind === "brokenSlab";
 }

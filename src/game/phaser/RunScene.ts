@@ -81,6 +81,8 @@ export class RunScene extends Phaser.Scene {
   private roadside: Roadside[] = [];
   private roadsideDist = 0;
   private buildingDist = 0;
+  private decalDist = 0;
+  private decals: { s: Phaser.GameObjects.Image; z: number; x: number }[] = [];
   private particles: Particle[] = [];
   private weather: Particle[] = [];
   private warnings: { lanes: number[]; t: number; icons: Phaser.GameObjects.Image[] }[] = [];
@@ -328,7 +330,7 @@ export class RunScene extends Phaser.Scene {
     }
   }
 
-  /** HYDRA van + JCB threatening a family's house, shown by the roadside up ahead. */
+  /** HIDRA van + JCB threatening a family's house, shown by the roadside up ahead. */
   private startDemolitionSite() {
     this.demo?.house.destroy();
     this.demo?.van.destroy();
@@ -346,9 +348,28 @@ export class RunScene extends Phaser.Scene {
     if (!d) return;
     this.demo = null;
     if (saved) {
-      this.floatText("DEMOLITION STOPPED!", CX, HORIZON + 30, "#7bdc7b");
+      this.floatText("DEMOLITION STOPPED!", CX, HORIZON + 20, "#7bdc7b");
       d.jcb.setFrame("dm-jcb-0");
-      this.tweens.add({ targets: [d.van, d.jcb], x: "-=320", duration: 1400, ease: "Quad.In" });
+      // Mr. Ranga and Tondal Reddy storm out of the HIDRA van, furious
+      const duo = (["ranga", "tondal"] as const).map((who, i) => {
+        const s = this.add.sprite(d.van.x + 10, d.van.y - 6, "props", `np-${who}-0`).setOrigin(0.5, 1).setScale(1.8).setDepth(1990);
+        // jump out, then storm down the kerb towards the CM (below the toast area)
+        this.tweens.chain({
+          targets: s,
+          tweens: [
+            { x: d.van.x + 40 + i * 30, y: d.van.y + 14, duration: 300, delay: 150 + i * 200, ease: "Back.Out" },
+            { x: 40 + i * 52, y: HORIZON + 182, scale: 2.6, duration: 700, ease: "Quad.Out" },
+          ],
+        });
+        return s;
+      });
+      const stomp = this.time.addEvent({ delay: 160, loop: true, callback: () => duo.forEach((s, i) => s.setFrame(`np-${i ? "tondal" : "ranga"}-${Math.floor(this.time.now / 160 + i) % 2}`)) });
+      this.time.delayedCall(1100, () => this.floatText("GRRR!", 92, HORIZON + 112, "#ff8a3d"));
+      this.time.delayedCall(3200, () => {
+        stomp.remove();
+        this.tweens.add({ targets: duo, alpha: 0, duration: 500, onComplete: () => duo.forEach((s) => s.destroy()) });
+        this.tweens.add({ targets: [d.van, d.jcb], x: "-=320", duration: 1400, delay: 300, ease: "Quad.In" });
+      });
     } else {
       d.jcb.setFrame("dm-jcb-1");
       d.house.setFrame("dm-rubble");
@@ -356,7 +377,7 @@ export class RunScene extends Phaser.Scene {
       if (!this.reducedMotion) this.cameras.main.shake(400, 0.018);
       this.floatText("BUILDING DEMOLISHED!", CX, HORIZON + 30, "#ff6b6b");
     }
-    this.time.delayedCall(2200, () => {
+    this.time.delayedCall(saved ? 3400 : 2200, () => {
       this.tweens.add({ targets: [d.house, d.van, d.jcb], alpha: 0, duration: 600, onComplete: () => [d.house, d.van, d.jcb].forEach((o) => o.destroy()) });
     });
   }
@@ -414,6 +435,7 @@ export class RunScene extends Phaser.Scene {
     this.offset = (this.offset + moved) % 1000;
 
     this.drawRoad();
+    this.updateDecals(moved);
     this.updateRoadside(moved, dt);
     this.renderEntities();
     this.renderPlayer(running);
@@ -436,6 +458,8 @@ export class RunScene extends Phaser.Scene {
     const mark = col(t.laneMark);
     const edge = col(t.edge);
     const side = col(t.sidewalk);
+    const dirt = col("#7a6248");
+    const dirtDark = col("#6b5540");
     const sideAlt = col(t.sidewalkAlt);
     g.fillStyle(side, 1);
     g.fillRect(0, HORIZON, VIEW_W, VIEW_H - HORIZON);
@@ -454,8 +478,9 @@ export class RunScene extends Phaser.Scene {
       // sidewalk stripes
       g.fillStyle(i % 2 ? side : sideAlt, 1);
       g.fillRect(0, y0, VIEW_W, y1 - y0 + 1);
-      // road surface
-      g.fillStyle(i % 2 ? road : roadDark, 1);
+      // road surface – long damaged stretches turn to broken dirt & gravel
+      const damaged = this.isDamaged(i);
+      g.fillStyle(damaged ? (i % 2 ? dirt : dirtDark) : i % 2 ? road : roadDark, 1);
       g.fillPoints(
         [
           { x: CX - half * p0, y: y0 },
@@ -479,8 +504,23 @@ export class RunScene extends Phaser.Scene {
           true,
         );
       }
-      // dashed lane markings
-      if (i % 2 === 0) {
+      if (damaged) {
+        // ragged leftover asphalt islands on a damaged stretch
+        g.fillStyle(roadDark, 1);
+        const w = half * 0.35;
+        const xo = (((i * 53) % 7) - 3) * 18;
+        g.fillPoints(
+          [
+            { x: CX + (xo - w) * p0, y: y0 },
+            { x: CX + (xo + w * 0.6) * p0, y: y0 },
+            { x: CX + (xo + w) * p1, y: y1 },
+            { x: CX + (xo - w * 0.4) * p1, y: y1 },
+          ],
+          true,
+        );
+      }
+      // dashed lane markings (worn away on damaged stretches)
+      if (i % 2 === 0 && !damaged) {
         g.fillStyle(mark, 1);
         for (const l of [0.5, 1.5]) {
           const xo = (l - 1) * LANE_W;
@@ -507,6 +547,37 @@ export class RunScene extends Phaser.Scene {
     const frame = Phaser.Utils.Array.GetRandom(theme.buildings) as string;
     const sprite = this.add.sprite(0, 0, "props", frame).setOrigin(0.5, 1);
     this.roadside.push({ sprite, z, side, offset: 78 + Math.random() * 8, crowd: -1, seed: Math.random() * 10, frame, back: true });
+  }
+
+  /** Deterministic long damaged-road stretches (blocks of 6 segments ≈ 19 m). */
+  private isDamaged(segment: number) {
+    const block = Math.floor(segment / 6);
+    const h = ((block * 2654435761) >>> 0) % 100;
+    const ratio = this.ctrl.level === "pothole" ? 45 : 28;
+    return h < ratio;
+  }
+
+  /** Cracks, patches, gravel and small holes painted on the road surface (no collision). */
+  private updateDecals(moved: number) {
+    this.decalDist += moved;
+    while (this.decalDist > 2.2) {
+      this.decalDist -= 2.2;
+      const frame = Phaser.Utils.Array.GetRandom(["dc-crack", "dc-crack2", "dc-patch", "dc-gravel", "dc-hole", "dc-crack"]) as string;
+      const s = this.add.image(0, 0, "props", frame).setOrigin(0.5, 0.5);
+      this.decals.push({ s, z: SPAWN_Z, x: -1.3 + Math.random() * 2.6 });
+    }
+    for (const d of this.decals) {
+      d.z -= moved;
+      const p = proj(d.z);
+      d.s.setPosition(CX + d.x * LANE_W * p, yAt(d.z)).setScale(BASE_SCALE * p).setDepth(-40 + (SPAWN_Z - d.z) * 0.01);
+    }
+    this.decals = this.decals.filter((d) => {
+      if (d.z < -4) {
+        d.s.destroy();
+        return false;
+      }
+      return true;
+    });
   }
 
   private spawnRoadside(z: number, forced?: { frame: string; side: -1 | 1 }) {
@@ -618,7 +689,8 @@ export class RunScene extends Phaser.Scene {
       const lift = e.type === "obstacle" ? 0 : (e.height * HEIGHT_PX + 10 + bob) * p;
       const x = xAt(e.lane + e.laneOffset, rz);
       const y = yAt(rz) - lift;
-      const scale = BASE_SCALE * p * (e.type === "obstacle" ? (e.kind === "bossShot" ? 1.6 : 1) : 1.5);
+      const scale =
+        BASE_SCALE * p * (e.type === "obstacle" ? (e.kind === "bossShot" ? 1.6 : e.kind === "pothole" ? 1.35 : e.kind === "crater" ? 1.2 : 1) : 1.5);
       s.setPosition(x, y).setScale(scale).setDepth(1000 - rz * 10 + (e.type === "obstacle" ? 0 : 1));
       s.setAlpha(e.z > SPAWN_Z - 4 ? Math.max(0.2, (SPAWN_Z + 4 - e.z) / 8) : 1);
       if (e.type === "obstacle" && (OBSTACLES[e.kind as ObstacleKind].avoid === "lane" || e.kind === "pothole")) s.setAlpha(s.alpha);

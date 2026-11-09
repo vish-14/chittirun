@@ -135,6 +135,59 @@ function pothole(c: PixelCanvas, fixed: boolean) {
   c.ellipse(13, 7, 4, 1, "#4a6f8a"); // a little rainwater
 }
 
+/** Giant crater: broken asphalt rim, exposed earth, muddy water and debris. */
+function crater(c: PixelCanvas) {
+  c.ellipse(28, 10, 27, 9, "#3a3a40"); // shattered asphalt ring
+  for (let i = 0; i < 14; i++) {
+    const a = (i / 14) * Math.PI * 2;
+    c.rect(28 + Math.cos(a) * 25 - 2, 10 + Math.sin(a) * 8 - 1, 4, 2, i % 2 ? "#5a5a62" : "#2a2a30");
+  }
+  c.ellipse(28, 11, 22, 7, "#7a5a3a"); // exposed earth
+  c.ellipse(28, 12, 18, 5, "#4a3424");
+  c.ellipse(29, 13, 13, 3.5, "#3d5a66"); // muddy water
+  c.hline(22, 28, 12, "#7fa8b8");
+  c.hline(32, 35, 14, "#7fa8b8");
+  c.rect(14, 8, 4, 2, "#6b6b75"); // chunks inside
+  c.rect(40, 9, 3, 2, "#6b6b75");
+  c.px(33, 12, "#e23b2e"); // someone's lost slipper
+}
+
+/** Raised broken concrete slab with exposed rebar. */
+function brokenSlab(c: PixelCanvas) {
+  c.poly([[2, 18], [8, 8], [22, 5], [30, 10], [24, 18]], "#8a8a92");
+  c.poly([[22, 18], [30, 7], [42, 9], [46, 18]], "#7a7a82");
+  c.line(8, 8, 22, 5, "#b0b0b8");
+  c.line(30, 7, 42, 9, "#a0a0a8");
+  for (let i = 0; i < 4; i++) c.line(10 + i * 9, 10, 8 + i * 9 + (i % 2 ? 4 : -2), 1, "#8a4a22"); // rebar
+  c.line(5, 16, 18, 12, "#4a4a52");
+  c.rect(0, 17, 48, 3, "#5a4a3a"); // dirt below
+}
+
+function roadCrack(c: PixelCanvas, v: number) {
+  let y = 4;
+  for (let x = 0; x < 40; x += 2) {
+    y = Math.max(1, Math.min(6, y + (((x * 7 + v * 13) % 5) - 2)));
+    c.rect(x, y, 2, 1, "#2a2a30");
+    if (x % 10 === 4) c.px(x, y + (v ? -1 : 1), "#2a2a30");
+  }
+}
+
+function patchwork(c: PixelCanvas) {
+  c.rect(1, 1, 22, 6, "#3a3a42");
+  c.rect(14, 4, 20, 6, "#4a4650");
+  c.hline(1, 22, 1, "#55555e");
+}
+
+function gravel(c: PixelCanvas) {
+  for (let i = 0; i < 30; i++) c.px((i * 17) % 40, (i * 7) % 10, i % 3 ? "#8a7a62" : "#5a4a3a");
+  c.ellipse(20, 5, 12, 3, "#6b5a44");
+}
+
+function smallHole(c: PixelCanvas) {
+  c.ellipse(10, 3.5, 9, 3, "#3a2f28");
+  c.ellipse(10, 4, 6, 2, "#1b1512");
+}
+
 function speedBreaker(c: PixelCanvas) {
   for (let x = 0; x < 44; x++) {
     const h = Math.round(Math.sin((x / 43) * Math.PI) * 2) + 4;
@@ -280,6 +333,13 @@ const OBSTACLE_DRAWERS: Record<string, [number, number, (c: PixelCanvas) => void
   "ob-cart": [44, 34, cart],
   "ob-pothole": [40, 12, (c) => pothole(c, false)],
   "ob-pothole-fixed": [40, 12, (c) => pothole(c, true)],
+  "ob-crater": [56, 20, crater],
+  "ob-brokenSlab": [48, 20, brokenSlab],
+  "dc-crack": [40, 8, (c) => roadCrack(c, 0)],
+  "dc-crack2": [40, 8, (c) => roadCrack(c, 1)],
+  "dc-patch": [36, 10, patchwork],
+  "dc-gravel": [40, 10, gravel],
+  "dc-hole": [20, 7, smallHole],
   "ob-speedBreaker": [44, 10, speedBreaker],
   "ob-barricade": [44, 22, barricade],
   "ob-cones": [44, 18, (c) => [0, 15, 30].forEach((x, i) => cone(c, x + 1, i === 1 ? 0 : 1))],

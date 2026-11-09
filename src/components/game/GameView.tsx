@@ -151,11 +151,15 @@ export default function GameView({
           setTimeout(() => finish(ctrl), e.reason === "quit" ? 0 : 900);
           break;
         case "demolitionStart":
-          toast({ kind: "fail", title: "🚧 Demolition alert!", detail: `HYDRA JCB at a family's house – ${e.timeLimit}s to stop it!` });
+          toast({ kind: "fail", title: "🚧 Demolition alert!", detail: `HIDRA JCB at a family's house – ${e.timeLimit}s to stop it!` });
           setAnnounce(`Demolition alert. Collect ${e.needed} stay orders in ${e.timeLimit} seconds.`);
           break;
         case "demolitionStopped":
-          toast({ kind: "success", title: "Demolition stopped!", detail: "Home saved · +1500 · approval up" });
+          toast({ kind: "success", title: "Demolition stopped!", detail: "Public is happy! Approval +10% · +1500" });
+          setTimeout(
+            () => toast({ kind: "fail", title: "😠 Ranga & Tondal Reddy angry!", detail: "They storm out of the HIDRA van · CM Power −4%" }),
+            900,
+          );
           break;
         case "demolitionDone":
           toast({ kind: "fail", title: "Building demolished!", detail: "CM Power −10% · approval −8%" });

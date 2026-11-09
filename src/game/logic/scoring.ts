@@ -34,7 +34,7 @@ export interface RunSummary {
   missionsCompleted: number;
   bossesDefeated: number;
   finalChallengesWon: number;
-  /** HYDRA demolitions stopped in time (optional for older clients) */
+  /** HIDRA demolitions stopped in time (optional for older clients) */
   demolitionsStopped?: number;
   /** checkpoints every ~10 s: [t, distance, score] */
   checkpoints: [number, number, number][];

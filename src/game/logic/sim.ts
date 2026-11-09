@@ -170,7 +170,7 @@ export class RunSim {
   private fcCooldown = 0;
   rewardsUnlocked: string[] = [];
 
-  // HYDRA demolition drive: stop the JCB with stay orders before time runs out
+  // HIDRA demolition drive: stop the JCB with stay orders before time runs out
   demolition: { timeLeft: number; timeLimit: number; got: number; needed: number; spawnTimer: number } | null = null;
   demolitionTimer = 32;
   demolitionsStopped = 0;
@@ -820,7 +820,7 @@ export class RunSim {
     // re-supply the active campaign mission next
   }
 
-  // ───────────────────────── HYDRA demolition ─────────────────────────
+  // ───────────────────────── HIDRA demolition ─────────────────────────
   private updateDemolition(dt: number) {
     const d = this.demolition;
     if (!d) {
@@ -865,6 +865,7 @@ export class RunSim {
     this.entities = this.entities.filter((e) => e.kind !== "stayOrder");
     this.onStage(this.gov.adjust(GOV_RULES.demolitionStopped.power, GOV_RULES.demolitionStopped.approval));
     this.emit({ type: "demolitionStopped" });
+    this.checkGovernanceThresholds();
   }
 
   // ───────────────────────────── boss ─────────────────────────────

@@ -11,7 +11,7 @@ function untilDemolition(sim: RunSim) {
   expect(sim.demolition).not.toBeNull();
 }
 
-describe("HYDRA demolition event", () => {
+describe("HIDRA demolition event", () => {
   it("gives 5–10 seconds, tighter later in the run, longer in relaxed mode", () => {
     const early = new RunSim({ level: "old-city", mode: "endless", seed: 1 });
     untilDemolition(early);
@@ -23,7 +23,7 @@ describe("HYDRA demolition event", () => {
     expect(late.demolition!.timeLimit).toBeLessThanOrEqual(6.1);
   });
 
-  it("collecting 3 stay orders stops it: bonus, power and approval up", () => {
+  it("collecting 3 stay orders stops it: public happy (approval up), but Ranga & Tondal anger costs power", () => {
     const sim = new RunSim({ level: "traffic", mode: "endless", seed: 4 });
     untilDemolition(sim);
     const p = sim.gov.power;
@@ -36,8 +36,8 @@ describe("HYDRA demolition event", () => {
     }
     expect(stopped).toBe(true);
     expect(sim.demolitionsStopped).toBe(1);
-    expect(sim.gov.approval).toBeGreaterThan(a);
-    expect(sim.gov.power).toBeGreaterThan(p - 2);
+    expect(sim.gov.approval).toBeGreaterThan(a + 5);
+    expect(sim.gov.power).toBeLessThan(p - 3);
     expect(sim.entities.some((e) => e.kind === "stayOrder")).toBe(false);
     expect(validateRunSummary(sim.summary()).ok).toBe(true);
   });
