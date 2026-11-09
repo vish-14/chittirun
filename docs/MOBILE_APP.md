@@ -60,9 +60,15 @@ first store upload** – it can never change afterwards. To rename, change it th
 ### Store-review notes for a political-satire game
 * Keep the in-game disclaimer (main menu) and repeat it in the store description: all characters, parties and the
   flag are fictional; no real politicians.
-* The party flag uses orange/white/green bands with a red-and-gold spinning-top emblem. A wheel/chakra-like emblem
-  is deliberately avoided: the Indian national flag and emblems are protected under the *Emblems and Names
+* The party flag uses orange/white/green bands with a raised-hand ✋ emblem. A blue wheel/chakra-like emblem is
+  deliberately avoided: the Indian national flag and emblems are protected under the *Emblems and Names
   (Prevention of Improper Use) Act, 1950* and the Flag Code.
+* **Heads-up:** an open palm on an orange-white-green flag is very close to the registered election symbol and flag
+  of a real party (INC), and the HYDRA demolition event references a real Hyderabad agency. Combined, players will
+  read the game as satire of a real government rather than a fictional one. Political satire is generally allowed
+  (Apple 1.1.1 exempts professional political satire), but keep it clearly comedic, avoid factual claims or
+  allegations, keep the fictional disclaimer, and consider a quick legal review before publishing. The emblem is a
+  single function (`handEmblem` in `src/game/art/character.ts`) if you ever want to swap it.
 * Real place names (Charminar, Ameerpet, Hitech City, Tank Bund…) are fine. Shops and malls use **generic** names –
   real brand names/logos need the owner's permission. Football posters show a generic "No. 10" player in
   sky-blue/white stripes – no real player names, faces, club/federation crests or sponsor logos.

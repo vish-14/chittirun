@@ -12,6 +12,7 @@ import type { Nav } from "../App";
 import Hud from "./Hud";
 import { Briefing, CrisisWarning, PauseMenu, Toasts, TouchControls, type Toast } from "./Overlays";
 import Results, { type ServerStatus } from "./Results";
+import { publicQuestion } from "@/lib/messages";
 
 const STAGE_ORDER: GovernanceStage[] = ["control", "pressure", "crisis", "final", "lost"];
 
@@ -46,6 +47,7 @@ export default function GameView({
   const [server, setServer] = useState<ServerStatus>({ state: "pending" });
   const [loadError, setLoadError] = useState<string | null>(null);
   const [announce, setAnnounce] = useState("");
+  const lastQuestion = useRef(0);
 
   const toast = useCallback((t: Omit<Toast, "id">) => {
     const id = Date.now() + Math.random();
@@ -146,6 +148,25 @@ export default function GameView({
         case "gameOver":
           setTimeout(() => finish(ctrl), e.reason === "quit" ? 0 : 900);
           break;
+        case "demolitionStart":
+          toast({ kind: "fail", title: "🚧 Demolition alert!", detail: `HYDRA JCB at a family's house – ${e.timeLimit}s to stop it!` });
+          setAnnounce(`Demolition alert. Collect ${e.needed} stay orders in ${e.timeLimit} seconds.`);
+          break;
+        case "demolitionStopped":
+          toast({ kind: "success", title: "Demolition stopped!", detail: "Home saved · +1500 · approval up" });
+          break;
+        case "demolitionDone":
+          toast({ kind: "fail", title: "Building demolished!", detail: "CM Power −10% · approval −8%" });
+          break;
+        case "hit": {
+          const q = publicQuestion(e.kind);
+          const now = Date.now();
+          if (q && now - lastQuestion.current > 5000) {
+            lastQuestion.current = now;
+            toast({ kind: "info", title: "Public asks:", detail: q });
+          }
+          break;
+        }
       }
     });
 

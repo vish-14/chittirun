@@ -15,10 +15,11 @@ export const BONUS = {
   bossDefeated: 3000,
   finalChallengeWon: 5000,
   maxMissionBonus: 3000,
+  demolitionStopped: 1500,
 } as const;
 
 /** Minimum real seconds needed between the events below (used for server plausibility bounds). */
-export const MIN_SECONDS = { mission: 8, boss: 40, finalChallenge: 30 } as const;
+export const MIN_SECONDS = { mission: 8, boss: 40, finalChallenge: 30, demolition: 20 } as const;
 
 export function scoreMultiplier(missionsCompleted: number, chaiActive: boolean, approval: number): number {
   const base = Math.min(MULT_MISSION_CAP, 1 + MULT_PER_MISSION * missionsCompleted);
@@ -33,6 +34,8 @@ export interface RunSummary {
   missionsCompleted: number;
   bossesDefeated: number;
   finalChallengesWon: number;
+  /** HYDRA demolitions stopped in time (optional for older clients) */
+  demolitionsStopped?: number;
   /** checkpoints every ~10 s: [t, distance, score] */
   checkpoints: [number, number, number][];
 }
@@ -60,6 +63,9 @@ export function validateRunSummary(s: RunSummary): ValidationResult {
   if (s.bossesDefeated > Math.floor(d / MIN_SECONDS.boss) + 1) return { ok: false, reason: "bosses-too-high" };
   if (s.finalChallengesWon > Math.floor(d / MIN_SECONDS.finalChallenge) + 1)
     return { ok: false, reason: "final-challenges-too-high" };
+  const demolitions = s.demolitionsStopped ?? 0;
+  if (typeof demolitions !== "number" || !Number.isInteger(demolitions) || demolitions < 0) return { ok: false, reason: "bad-demolitions" };
+  if (demolitions > Math.floor(d / MIN_SECONDS.demolition) + 1) return { ok: false, reason: "demolitions-too-high" };
 
   const maxScore =
     s.distance * DISTANCE_POINTS_PER_METRE * MAX_TOTAL_MULT +
@@ -67,6 +73,7 @@ export function validateRunSummary(s: RunSummary): ValidationResult {
     s.missionsCompleted * BONUS.maxMissionBonus +
     s.bossesDefeated * BONUS.bossDefeated +
     s.finalChallengesWon * BONUS.finalChallengeWon +
+    demolitions * BONUS.demolitionStopped +
     50; // rounding slack
   if (s.score > maxScore) return { ok: false, reason: "score-too-high" };
 
@@ -83,7 +90,7 @@ export function validateRunSummary(s: RunSummary): ValidationResult {
     const dt = t - prev[0];
     if (dist - prev[1] > ABSOLUTE_MAX_SPEED * dt + 5) return { ok: false, reason: "checkpoint-distance-spike" };
     // allow bonus lumps (missions/bosses/challenges) on top of the per-second cap
-    const lumpAllowance = BONUS.maxMissionBonus + BONUS.bossDefeated + BONUS.finalChallengeWon;
+    const lumpAllowance = BONUS.maxMissionBonus + BONUS.bossDefeated + BONUS.finalChallengeWon + BONUS.demolitionStopped;
     if (sc - prev[2] > perSecondScoreCap * dt + lumpAllowance) return { ok: false, reason: "checkpoint-score-spike" };
     prev = cp as [number, number, number];
   }

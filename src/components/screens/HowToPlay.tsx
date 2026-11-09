@@ -32,6 +32,7 @@ export default function HowToPlay({ onBack }: { onBack: () => void }) {
           <li>⬇️ <b>Slide</b> under banners, cables, red tape and boom gates.</li>
           <li>↔️ <b>Change lane</b> for autos, buses, tankers, cows, carts, jams and file towers.</li>
           <li>🕳️ <b>Potholes:</b> jump over them – or slide over them to <b>fix</b> them!</li>
+          <li>🌊 <b>Waterlogged roads</b>, 🚗 <b>traffic jams</b> and potholes are on every route – and the public will ask the CM about each one.</li>
         </ul>
       </Panel>
       <Panel title="Power-ups">
@@ -62,6 +63,13 @@ export default function HowToPlay({ onBack }: { onBack: () => void }) {
         <p className="mt-2 text-sm text-cream/80">
           Below 15% a <b>no-confidence motion</b> starts: complete three objectives within the time limit to restore power and win a
           reward. Fail, and Chitti garu loses the CM post.
+        </p>
+      </Panel>
+      <Panel title="🚧 HYDRA demolition alerts">
+        <p className="text-sm text-cream/80">
+          Mid-run, a HYDRA van and a JCB show up at a family&apos;s house. You get <b>5–10 seconds</b> (less as the run goes on):
+          grab <b>3 🛑 STAY ORDERS</b> to stop the demolition (+1500 pts, +approval). Too slow and the building is demolished –
+          <b> CM Power −10%</b>, approval −8%.
         </p>
       </Panel>
       <Panel title="Bosses">

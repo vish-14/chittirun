@@ -18,6 +18,8 @@ unit tests. Everything is fictional game balance.
 | Boss defeated / escaped | +4 / 0 | +6 / −3 |
 | Every 50 coins | – | +1 |
 | Final challenge won | +35 | +20 (+ life, reward, 5000 pts) |
+| HYDRA demolition stopped (3 stay orders in time) | +4 | +6 (+1500 pts) |
+| HYDRA demolition not stopped (building demolished) | −10 | −8 |
 
 ## Stages
 | Power | Stage | Effects |
@@ -33,6 +35,18 @@ Seven missions rotate (no immediate repeats). Each pauses for a briefing card (c
 progress counter and countdown, rewards and penalties. Targets grow up to +30 % and timers shrink up to −20 % as the
 run goes on; *Relaxed mode* adds +25 % time. The spawner guarantees ≈1.7× the needed tokens arrive before the
 deadline, always in a lane that is not blocked.
+
+## HYDRA demolition alerts
+Every ~55–80 s (first at ~32 s) a HYDRA van and a JCB arrive at a family's house by the road. The CM has
+**10 s early in a run, shrinking to 6 s** (+2 s in relaxed mode) to collect **3 🛑 stay orders**, which spawn in
+reachable lanes that are clear of obstacles. Success saves the home; failure shows the house collapsing and costs
+power. The event never overlaps a boss and is cancelled (no penalty) if the no-confidence motion starts. Balance probe:
+a skilled bot stops 147/149 alerts, a weak bot ~57 %.
+
+## City problems everywhere
+Every route now mixes potholes, waterlogged roads and traffic jams with its own hazards. Hitting one triggers a
+"Public asks:" question for the CM (e.g. “CM garu, ee pothole eppudu fill chestaru?”), and protesters carry
+question placards (ROAD? WHY? JAM! WATER FIX! HELP). Questions, not allegations.
 
 ## Final no-confidence challenge
 Triggered the moment power drops below 15 %. The active mission is paused (returned to the queue, no penalty), any

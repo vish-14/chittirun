@@ -90,3 +90,34 @@ test("losing all lives shows game over with a verified score", async ({ page }) 
   await page.getByRole("button", { name: /Leaders/ }).click();
   await expect(page.getByText("Local high scores")).toBeVisible();
 });
+
+test("HYDRA demolition: stopped with stay orders, or the building falls and power drops", async ({ page }) => {
+  await startEndless(page);
+  await clearRoad(page);
+  await sim(page, (c) => {
+    c.sim.missionTimer = 999;
+    c.sim.demolitionTimer = 0.01;
+  });
+  const card = page.getByTestId("demolition-card");
+  await expect(card).toBeVisible();
+  await expect(card).toContainText("STAY ORDERS");
+  await sim(page, (c) => {
+    c.sim.demolition!.got = 2;
+    c.sim.entities.push({ id: 777001, type: "token", kind: "stayOrder", lane: c.sim.player.lane, z: 0.1, vz: 0, length: 0.6, height: 0, resolved: false, hit: false, collected: false, laneOffset: 0 });
+  });
+  await expect(page.getByTestId("toast-success").filter({ hasText: "Demolition stopped" })).toBeVisible();
+  await expect(card).toBeHidden();
+
+  // second alert: let the timer run out
+  const power = await sim(page, (c) => c.sim.gov.power);
+  await sim(page, (c) => {
+    c.sim.demolitionTimer = 0.01;
+  });
+  await expect(card).toBeVisible();
+  await sim(page, (c) => {
+    c.sim.entities = [];
+    c.sim.demolition!.timeLeft = 0.05;
+  });
+  await expect(page.getByTestId("toast-fail").filter({ hasText: "Building demolished" })).toBeVisible();
+  expect(await sim(page, (c) => c.sim.gov.power)).toBeLessThan(power - 8);
+});

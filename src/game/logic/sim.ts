@@ -88,6 +88,10 @@ export type SimEvent =
   | { type: "bossDefeated" }
   | { type: "bossEscaped" }
   | { type: "checkpoint" }
+  | { type: "demolitionStart"; timeLimit: number; needed: number }
+  | { type: "demolitionProgress"; got: number; needed: number }
+  | { type: "demolitionStopped" }
+  | { type: "demolitionDone" }
   | { type: "gameOver"; reason: EndReason };
 
 export type Phase = "running" | "briefing" | "over";
@@ -165,6 +169,12 @@ export class RunSim {
   fcWins = 0;
   private fcCooldown = 0;
   rewardsUnlocked: string[] = [];
+
+  // HYDRA demolition drive: stop the JCB with stay orders before time runs out
+  demolition: { timeLeft: number; timeLimit: number; got: number; needed: number; spawnTimer: number } | null = null;
+  demolitionTimer = 32;
+  demolitionsStopped = 0;
+  buildingsDemolished = 0;
 
   // boss
   boss: BossState | null = null;
@@ -340,6 +350,8 @@ export class RunSim {
     if (this.phase !== "running") return;
 
     this.updateBoss(dt);
+    this.updateDemolition(dt);
+    if (this.phase !== "running") return;
     this.spawn(dt);
     this.updateMissions(dt);
     if (this.phase !== "running") return;
@@ -595,6 +607,13 @@ export class RunSim {
         }
         break;
       }
+      case "stayOrder":
+        if (this.demolition) {
+          this.demolition.got++;
+          this.emit({ type: "demolitionProgress", got: this.demolition.got, needed: this.demolition.needed });
+          if (this.demolition.got >= this.demolition.needed) this.stopDemolition();
+        }
+        break;
       case "petition":
         if (this.boss) {
           this.boss.hp -= 1;
@@ -756,6 +775,10 @@ export class RunSim {
       this.boss = null;
       this.emit({ type: "bossEscaped" });
     }
+    if (this.demolition) {
+      this.demolition = null; // the motion takes priority – no penalty
+      this.entities = this.entities.filter((e) => e.kind !== "stayOrder");
+    }
     this.fcAttempts++;
     this.pendingFc = new FinalChallenge(this.rng, this.fcAttempts, this.opts.relaxed);
     if (this.opts.briefings) {
@@ -797,13 +820,60 @@ export class RunSim {
     // re-supply the active campaign mission next
   }
 
+  // ───────────────────────── HYDRA demolition ─────────────────────────
+  private updateDemolition(dt: number) {
+    const d = this.demolition;
+    if (!d) {
+      if (this.fc || this.pendingFc || this.boss) return;
+      this.demolitionTimer -= dt;
+      if (this.demolitionTimer > 0) return;
+      // 5–10 s to react: generous early, tighter as the run goes on
+      const timeLimit = Math.round((10 - 4 * this.difficulty + (this.opts.relaxed ? 2 : 0)) * 10) / 10;
+      this.demolition = { timeLeft: timeLimit, timeLimit, got: 0, needed: 3, spawnTimer: 0.2 };
+      this.emit({ type: "demolitionStart", timeLimit, needed: 3 });
+      return;
+    }
+    d.timeLeft -= dt;
+    d.spawnTimer -= dt;
+    if (d.spawnTimer <= 0 && d.got + this.entities.filter((e) => e.kind === "stayOrder").length < d.needed + 2) {
+      d.spawnTimer = Math.max(0.7, (d.timeLimit - 1.5) / (d.needed + 2.5));
+      // place a stay order that arrives in ~1.3 s, in a lane with nothing nasty around it
+      const z = this.speed * 1.3;
+      const lanes = [0, 1, 2].filter(
+        (l) => !this.entities.some((e) => e.type === "obstacle" && e.lane === l && e.z > z - 6 && e.z < z + 4),
+      );
+      const near = lanes.filter((l) => Math.abs(l - this.player.lane) <= 1);
+      const pool = near.length ? near : lanes.length ? lanes : [this.player.lane];
+      this.addEntity("token", "stayOrder", this.rng.pick(pool), z);
+    }
+    if (d.timeLeft <= 0) {
+      this.demolition = null;
+      this.buildingsDemolished++;
+      this.demolitionTimer = this.rng.range(55, 80);
+      this.entities = this.entities.filter((e) => e.kind !== "stayOrder");
+      this.onStage(this.gov.adjust(GOV_RULES.demolitionDone.power, GOV_RULES.demolitionDone.approval));
+      this.emit({ type: "demolitionDone" });
+      this.checkGovernanceThresholds();
+    }
+  }
+
+  private stopDemolition() {
+    this.demolition = null;
+    this.demolitionsStopped++;
+    this.demolitionTimer = this.rng.range(55, 80);
+    this.score += BONUS.demolitionStopped;
+    this.entities = this.entities.filter((e) => e.kind !== "stayOrder");
+    this.onStage(this.gov.adjust(GOV_RULES.demolitionStopped.power, GOV_RULES.demolitionStopped.approval));
+    this.emit({ type: "demolitionStopped" });
+  }
+
   // ───────────────────────────── boss ─────────────────────────────
   private updateBoss(dt: number) {
     if (!this.boss) {
       if (this.fc || this.pendingFc) return;
       this.bossTimer -= dt;
       // the boss waits politely for the current mission to finish
-      if (this.bossTimer <= 0 && !this.mission && !this.pendingMission) {
+      if (this.bossTimer <= 0 && !this.mission && !this.pendingMission && !this.demolition) {
         const hp = 5;
         this.boss = {
           name: this.level.boss.name,
@@ -991,7 +1061,6 @@ export class RunSim {
       }
     }
     // jams outside the traffic mission would be unclearable; swap them for autos
-    for (const r of row) if (r.kind === "jam" && due !== "jam" && this.level.id !== "traffic") r.kind = "auto";
     // fairness: never three lane-blocking obstacles in a row
     const blockers = row.filter((r) => OBSTACLES[r.kind].avoid === "lane");
     if (blockers.length >= LANES) row.pop();
@@ -1070,6 +1139,7 @@ export class RunSim {
       missionsCompleted: this.missionsCompleted,
       bossesDefeated: this.bossesDefeated,
       finalChallengesWon: this.fcWins,
+      demolitionsStopped: this.demolitionsStopped,
       checkpoints: this.checkpoints,
     };
   }
@@ -1117,6 +1187,9 @@ export class RunSim {
             })),
           }
         : null,
+      demolition: this.demolition
+        ? { timeLeft: this.demolition.timeLeft, timeLimit: this.demolition.timeLimit, got: this.demolition.got, needed: this.demolition.needed }
+        : null,
       boss: this.boss
         ? { name: this.boss.name, hp: this.boss.hp, maxHp: this.boss.maxHp, timeLeft: this.boss.timeLeft }
         : null,
@@ -1160,6 +1233,7 @@ export interface HudSnapshot {
     objectives: { label: string; progress: number; target: number; done: boolean }[];
   } | null;
   boss: { name: string; hp: number; maxHp: number; timeLeft: number } | null;
+  demolition: { timeLeft: number; timeLimit: number; got: number; needed: number } | null;
   missionsCompleted: number;
   missionsFailed: number;
   campaign: Partial<Record<MissionId, MissionStatus>> | null;

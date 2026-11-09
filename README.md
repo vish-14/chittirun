@@ -32,6 +32,10 @@ that changes sky, weather, crowds (cheering → protesting), music (tempo/minor 
 a final no-confidence challenge with three random objectives; a six-chapter campaign with completed/pending/failed
 missions. Full rules: [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 
+**HYDRA demolition alerts** – mid-run, a HYDRA van and a JCB start demolishing a family's house; Chitti has 5–10
+seconds to grab 3 🛑 stay orders, or the building comes down (−10 % CM Power). **City problems everywhere** –
+potholes, waterlogging and traffic jams on every route, with the public asking the CM questions about each one.
+
 **Screens** – main menu, character select (outfits + animation preview + V-sign victory pose), level select,
 campaign, daily challenge (seeded, same for everyone), global + local leaderboards, CM Performance Dashboard,
 Governance Mission Board, settings, how-to-play, pause menu, mission briefing, crisis warnings, no-confidence

@@ -20,7 +20,7 @@ export const OBSTACLES: Record<ObstacleKind, ObstacleSpec> = {
   tanker: { avoid: "lane", length: 5.0, vz: 1.5, label: "Water tanker" },
   cow: { avoid: "lane", length: 2.0, vz: 0, label: "Unbothered cow" },
   cart: { avoid: "lane", length: 2.0, vz: 0, label: "Fruit pushcart" },
-  puddle: { avoid: "jump", length: 1.8, vz: 0, label: "Mystery puddle" },
+  puddle: { avoid: "jump", length: 1.8, vz: 0, label: "Waterlogged road" },
   pipe: { avoid: "jump", length: 1.0, vz: 0, label: "Burst pipeline" },
   jam: { avoid: "lane", length: 3.0, vz: 0, label: "Traffic jam" },
   fileStack: { avoid: "lane", length: 1.6, vz: 0, label: "Pending-file tower" },
@@ -56,6 +56,7 @@ export const TOKENS: Record<TokenKind, { name: string }> = {
   brick: { name: "Construction Brick" },
   siren: { name: "Emergency Siren" },
   petition: { name: "Public Petition" },
+  stayOrder: { name: "Stay Order" },
 };
 
 export function isGroundHazard(kind: ObstacleKind): boolean {

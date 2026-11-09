@@ -82,6 +82,7 @@ export default function Hud({ s, outfit, level, onPause }: { s: HudSnapshot; out
             Next mission in {Math.ceil(s.nextMissionIn)}s
           </div>
         )}
+        {s.demolition && <DemolitionCard d={s.demolition} />}
         {s.boss && <BossCard b={s.boss} />}
         <PowerUps p={s.powerups} />
       </div>
@@ -139,6 +140,29 @@ function FcCard({ fc }: { fc: NonNullable<HudSnapshot["fc"]> }) {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function DemolitionCard({ d }: { d: NonNullable<HudSnapshot["demolition"]> }) {
+  return (
+    <div
+      data-testid="demolition-card"
+      className="animate-alarm w-[86%] rounded-md border-2 border-black p-1.5 text-ink"
+      style={{ background: "repeating-linear-gradient(135deg,#f5d01b 0 10px,#1b1020 10px 14px)" }}
+    >
+      <div className="rounded bg-[#f5d01b] px-1">
+        <div className="font-pixel flex justify-between text-[11px] font-black uppercase">
+          <span>🚧 HYDRA demolition!</span>
+          <span data-testid="demolition-timer">⏱ {d.timeLeft.toFixed(1)}s</span>
+        </div>
+        <div className="text-[11px] font-bold">
+          Grab {d.needed} 🛑 STAY ORDERS to stop the JCB: {d.got}/{d.needed}
+        </div>
+        <div className="mt-0.5 h-1.5 overflow-hidden rounded-sm bg-black/40">
+          <div className="h-full bg-red-600 transition-[width]" style={{ width: `${(d.timeLeft / d.timeLimit) * 100}%` }} />
+        </div>
+      </div>
     </div>
   );
 }

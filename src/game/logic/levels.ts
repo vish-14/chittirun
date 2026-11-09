@@ -33,7 +33,7 @@ export const LEVELS: LevelDef[] = [
     maxSpeed: 25,
     rowGapStart: 1.25,
     rowGapMin: 0.7,
-    obstacleWeights: { cart: 4, cow: 3, cables: 4, auto: 3, pothole: 2, barricade: 2, cones: 1 },
+    obstacleWeights: { pothole: 4, puddle: 3, jam: 2, cart: 3, cow: 2, cables: 3, auto: 3, barricade: 1, cones: 1 },
     powerupWeights: { chai: 4, biryani: 3, fileCollector: 2, metro: 1, rocket: 1, tankerShield: 1 },
     doubleChance: 0.25,
     boss: {
@@ -55,7 +55,7 @@ export const LEVELS: LevelDef[] = [
     maxSpeed: 27,
     rowGapStart: 1.15,
     rowGapMin: 0.66,
-    obstacleWeights: { auto: 5, bus: 3, cones: 2, jam: 2, boomGate: 2, banner: 2, speedBreaker: 2 },
+    obstacleWeights: { jam: 4, auto: 4, bus: 3, pothole: 3, puddle: 3, cones: 1, boomGate: 2, banner: 1, speedBreaker: 2 },
     powerupWeights: { metro: 4, chai: 3, biryani: 2, fileCollector: 2, rocket: 1, tankerShield: 1 },
     doubleChance: 0.32,
     boss: {
@@ -77,7 +77,7 @@ export const LEVELS: LevelDef[] = [
     maxSpeed: 28,
     rowGapStart: 1.1,
     rowGapMin: 0.64,
-    obstacleWeights: { pothole: 6, speedBreaker: 3, barricade: 3, cones: 2, banner: 2, auto: 2, cow: 1 },
+    obstacleWeights: { pothole: 7, puddle: 3, jam: 2, speedBreaker: 2, barricade: 2, cones: 1, banner: 2, auto: 2, cow: 1 },
     powerupWeights: { tankerShield: 4, biryani: 3, chai: 2, fileCollector: 2, rocket: 1, metro: 1 },
     doubleChance: 0.35,
     boss: {
@@ -99,7 +99,7 @@ export const LEVELS: LevelDef[] = [
     maxSpeed: 29,
     rowGapStart: 1.05,
     rowGapMin: 0.62,
-    obstacleWeights: { tanker: 5, puddle: 4, pipe: 3, cables: 2, auto: 2, cow: 1, pothole: 2 },
+    obstacleWeights: { puddle: 6, tanker: 4, pothole: 3, jam: 2, pipe: 2, cables: 2, auto: 2, cow: 1 },
     powerupWeights: { tankerShield: 4, chai: 3, biryani: 2, rocket: 2, fileCollector: 2, metro: 1 },
     doubleChance: 0.38,
     boss: {
@@ -121,7 +121,7 @@ export const LEVELS: LevelDef[] = [
     maxSpeed: 30,
     rowGapStart: 1.0,
     rowGapMin: 0.6,
-    obstacleWeights: { fileStack: 5, redTape: 4, boomGate: 3, barricade: 2, bus: 1, cables: 1, cones: 2 },
+    obstacleWeights: { fileStack: 4, redTape: 3, boomGate: 2, pothole: 3, puddle: 3, jam: 2, barricade: 1, bus: 1, cones: 1 },
     powerupWeights: { fileCollector: 4, rocket: 3, chai: 2, biryani: 2, metro: 1, tankerShield: 1 },
     doubleChance: 0.42,
     boss: {

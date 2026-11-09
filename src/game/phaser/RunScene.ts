@@ -89,6 +89,7 @@ export class RunScene extends Phaser.Scene {
   private unsub: (() => void) | null = null;
   private outfitKey = "chitti-classic";
   private lastSignLeg = 0;
+  private demo: { house: Phaser.GameObjects.Image; van: Phaser.GameObjects.Image; jcb: Phaser.GameObjects.Sprite } | null = null;
   private train: Phaser.GameObjects.Image | null = null;
 
   constructor() {
@@ -306,7 +307,52 @@ export class RunScene extends Phaser.Scene {
       case "fcBriefing":
         this.flashScreen(0xff0000, 0.4);
         break;
+      case "demolitionStart":
+        this.startDemolitionSite();
+        break;
+      case "demolitionProgress":
+        if (this.demo) this.floatText(`STAY ORDER ${e.got}/${e.needed}`, this.demo.jcb.x, this.demo.jcb.y - 70, "#ff6b6b");
+        break;
+      case "demolitionStopped":
+        this.endDemolitionSite(true);
+        break;
+      case "demolitionDone":
+        this.endDemolitionSite(false);
+        break;
     }
+  }
+
+  /** HYDRA van + JCB threatening a family's house, shown by the roadside up ahead. */
+  private startDemolitionSite() {
+    this.demo?.house.destroy();
+    this.demo?.van.destroy();
+    this.demo?.jcb.destroy();
+    const y = HORIZON + 78;
+    const house = this.add.image(VIEW_W - 58, y, "props", "dm-house").setOrigin(0.5, 1).setScale(1.5).setDepth(450);
+    const jcb = this.add.sprite(VIEW_W - 150, y + 6, "props", "dm-jcb-0").setOrigin(0.5, 1).setScale(1.4).setDepth(451);
+    const van = this.add.image(-80, y + 10, "props", "dm-van").setOrigin(0.5, 1).setScale(1.3).setDepth(452);
+    this.tweens.add({ targets: van, x: 70, duration: 800, ease: "Quad.Out" });
+    this.demo = { house, van, jcb };
+  }
+
+  private endDemolitionSite(saved: boolean) {
+    const d = this.demo;
+    if (!d) return;
+    this.demo = null;
+    if (saved) {
+      this.floatText("DEMOLITION STOPPED!", CX, HORIZON + 30, "#7bdc7b");
+      d.jcb.setFrame("dm-jcb-0");
+      this.tweens.add({ targets: [d.van, d.jcb], x: "-=320", duration: 1400, ease: "Quad.In" });
+    } else {
+      d.jcb.setFrame("dm-jcb-1");
+      d.house.setFrame("dm-rubble");
+      this.burst(d.house.x, d.house.y - 40, 40, [0xc98b5a, 0x8a7a6a, 0xe8d5b0, 0xffffff]);
+      if (!this.reducedMotion) this.cameras.main.shake(400, 0.018);
+      this.floatText("BUILDING DEMOLISHED!", CX, HORIZON + 30, "#ff6b6b");
+    }
+    this.time.delayedCall(2200, () => {
+      this.tweens.add({ targets: [d.house, d.van, d.jcb], alpha: 0, duration: 600, onComplete: () => [d.house, d.van, d.jcb].forEach((o) => o.destroy()) });
+    });
   }
 
   private flashScreen(color: number, alpha: number) {
@@ -658,6 +704,11 @@ export class RunScene extends Phaser.Scene {
   }
 
   private renderBoss() {
+    if (this.demo) {
+      // the JCB keeps swinging at the house while the clock runs
+      this.demo.jcb.setFrame(Math.floor(this.time.now / 300) % 2 ? "dm-jcb-1" : "dm-jcb-0");
+      this.demo.house.x = VIEW_W - 58 + (Math.floor(this.time.now / 300) % 2 && !this.reducedMotion ? 1 : 0);
+    }
     if (!this.boss) return;
     const t = (this.time.now - this.time0) / 1000;
     this.boss.x = CX + Math.sin(t * 1.6) * 70;

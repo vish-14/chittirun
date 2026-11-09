@@ -1,5 +1,5 @@
 import { PixelCanvas, shade, text, textWidth, type Frame } from "./painter";
-import { PAL, tri } from "./character";
+import { PAL, handEmblem, tri } from "./character";
 import { hyderabadFrames } from "./hyderabad";
 
 const O = "#1b1020";
@@ -214,12 +214,16 @@ function boomGate(c: PixelCanvas) {
   c.rect(0, 58, 10, 2, "#333");
 }
 
+/** Waterlogged road: muddy flood water with ripples and a floating slipper. */
 function puddle(c: PixelCanvas) {
-  c.ellipse(22, 6, 21, 5, "#2e6ea6");
-  c.ellipse(22, 5, 17, 3, "#4f97d6");
-  c.hline(10, 16, 4, "#bfe6ff");
-  c.hline(26, 30, 6, "#bfe6ff");
-  c.px(35, 4, "#ffffff");
+  c.ellipse(22, 6, 21, 5, "#6b5a3a");
+  c.ellipse(22, 6, 19, 4, "#4f6f7a");
+  c.ellipse(22, 5, 15, 3, "#5f8fa6");
+  c.hline(8, 14, 4, "#bfe6ff");
+  c.hline(26, 31, 6, "#bfe6ff");
+  c.hline(17, 21, 8, "#9fc8d8");
+  c.rect(31, 3, 4, 2, "#e23b2e"); // floating chappal
+  c.px(32, 3, "#ffd34d");
 }
 
 function pipe(c: PixelCanvas) {
@@ -414,6 +418,8 @@ const PICKUP_DRAWERS: Record<string, (c: PixelCanvas) => void> = {
 const SHIRTS = ["#d94f4f", "#3f7fd9", "#f2c53d", "#46a35b", "#9b59b6", "#f07b17", "#7ec8f0"];
 /** Variant 6 is a football fan in a sky-blue & white striped jersey. */
 export const CROWD_VARIANTS = 7;
+/** Questions the public asks the CM (each fits a 22px placard). */
+export const PLACARDS = ["ROAD?", "WHY?", "JAM!", "WATER", "FIX!", "?!", "HELP"];
 const SKINS = ["#c98b5a", "#a86a3d", "#e0a878", "#8c5530"];
 
 function person(c: PixelCanvas, v: number, pose: "idle" | "cheer" | "protest" | "chant", f: number) {
@@ -443,10 +449,12 @@ function person(c: PixelCanvas, v: number, pose: "idle" | "cheer" | "protest" | 
     c.vline(2, 9 + bob, 14 + bob, skin);
     c.px(6, 7 + bob, "#7a2323");
   } else {
-    // placard with "?!" (a question – not an accusation)
+    // placard with a question for the CM (questions, not accusations)
+    const q = PLACARDS[v % PLACARDS.length];
     c.vline(12, 0, 12, "#7a4a22");
-    c.rect(9, 0 + f, 9, 6, "#fbf8f1");
-    text(c, 10, 1 + f, "?!", "#d42a2a");
+    const w = q.length * 4 + 1;
+    c.rect(22 - w, 0 + f, w, 7, "#fbf8f1");
+    text(c, 23 - w, 1 + f, q, "#d42a2a");
     c.line(10, 9 + bob, 12, 7 + bob, skin);
     c.hline(5, 8, 7 + bob, "#7a2323");
   }
@@ -563,11 +571,7 @@ const ROADSIDE: Record<string, [number, number, (c: PixelCanvas) => void]> = {
   "rs-flagpole": [28, 64, (c) => {
     c.rect(3, 4, 2, 60, "#9aa0aa");
     for (let i = 0; i < 20; i++) for (let j = 0; j < 12; j++) c.px(5 + i, 5 + j + Math.round(Math.sin(i / 4) * 1), tri(j, 12));
-    c.hline(13, 17, 10, "#c62828");
-    c.hline(13, 17, 11, "#ffd34d");
-    c.hline(14, 16, 12, "#c62828");
-    c.px(15, 9, "#5a3a1a");
-    c.px(15, 13, "#5a3a1a");
+    handEmblem(c, 15, 11, 2);
   }],
   "rs-files": [32, 30, (c) => fileStack(c)],
 };
@@ -724,7 +728,7 @@ export function propFrames(): Frame[] {
   for (const [name, draw] of Object.entries(PICKUP_DRAWERS)) frames.push(make(name, 16, 16, draw));
   for (let v = 0; v < CROWD_VARIANTS; v++)
     for (const pose of ["idle", "cheer", "protest", "chant"] as const)
-      for (let f = 0; f < 2; f++) frames.push(make(`crowd-${v}-${pose}-${f}`, 18, 22, (c) => person(c, v, pose, f)));
+      for (let f = 0; f < 2; f++) frames.push(make(`crowd-${v}-${pose}-${f}`, 23, 22, (c) => person(c, v, pose, f)));
   for (const [name, [w, h, draw]] of Object.entries(ROADSIDE)) frames.push(make(name, w, h, draw));
   for (const [lvl, draw] of Object.entries(BOSSES))
     for (let f = 0; f < 2; f++) frames.push(make(`boss-${lvl}-${f}`, 80, 80, (c) => draw(c, f)));

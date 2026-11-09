@@ -16,6 +16,8 @@ export const GOV_RULES = {
   bossEscaped: { power: 0, approval: -3 },
   coinsPerApprovalPoint: 50,
   finalChallengeWin: { power: 35, approval: 20 },
+  demolitionStopped: { power: 4, approval: 6 },
+  demolitionDone: { power: -10, approval: -8 },
 } as const;
 
 export function stageForPower(power: number): GovernanceStage {

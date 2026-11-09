@@ -1,24 +1,24 @@
 {
   "atlases": {
     "chitti-classic": {
-      "png": "chitti-classic.c526365e72.png",
-      "json": "chitti-classic.25b105d8c5.json"
+      "png": "chitti-classic.19e86f7a58.png",
+      "json": "chitti-classic.dd2d4e7efd.json"
     },
     "chitti-monsoon": {
-      "png": "chitti-monsoon.bb5081b277.png",
-      "json": "chitti-monsoon.9712cc1a4e.json"
+      "png": "chitti-monsoon.e0bcc09b93.png",
+      "json": "chitti-monsoon.78433fee23.json"
     },
     "chitti-festive": {
-      "png": "chitti-festive.bdcf3e4a93.png",
-      "json": "chitti-festive.7afc297c2a.json"
+      "png": "chitti-festive.9639774d03.png",
+      "json": "chitti-festive.60c8006306.json"
     },
     "chitti-golden": {
-      "png": "chitti-golden.0decc0dfc3.png",
-      "json": "chitti-golden.5dc074a103.json"
+      "png": "chitti-golden.6bf8b49c24.png",
+      "json": "chitti-golden.f592a9bed0.json"
     },
     "props": {
-      "png": "props.19557e812c.png",
-      "json": "props.06793e2922.json"
+      "png": "props.3874b8a55b.png",
+      "json": "props.c1303574d0.json"
     }
   },
   "images": {

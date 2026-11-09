@@ -22,7 +22,7 @@ export type ObstacleKind =
 
 export type PowerUpKind = "chai" | "biryani" | "metro" | "fileCollector" | "rocket" | "tankerShield";
 
-export type TokenKind = "whistle" | "tankerToken" | "job" | "service" | "brick" | "siren" | "petition";
+export type TokenKind = "whistle" | "tankerToken" | "job" | "service" | "brick" | "siren" | "petition" | "stayOrder";
 
 export type EntityType = "obstacle" | "coin" | "powerup" | "token";
 

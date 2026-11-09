@@ -120,6 +120,10 @@ export class GameController {
       case "bossDefeated": sfx("bossDefeated"); a.setBoss(false); break;
       case "bossEscaped": a.setBoss(false); break;
       case "gameOver": sfx("gameOver"); a.stopMusic(); break;
+      case "demolitionStart": sfx("stageWarn"); this.vibrate(150); break;
+      case "demolitionProgress": sfx("token"); break;
+      case "demolitionStopped": sfx("missionComplete"); break;
+      case "demolitionDone": sfx("bossDefeated"); sfx("boo"); this.vibrate(250); break;
     }
     for (const l of this.listeners) l(e);
   }

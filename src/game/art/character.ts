@@ -269,6 +269,41 @@ function headBack(c: PixelCanvas, x: number, y: number) {
   c.rect(x + 13, y + 19, 7, 2, PAL.skinShade);
 }
 
+const HAND = [
+  // 7×9 raised right palm, fingers up, thumb out (1 = skin, 2 = shade, 3 = outline)
+  "0303030",
+  "3131313",
+  "3131313",
+  "3131313",
+  "3111113",
+  "3111112",
+  "0311113",
+  "0311113",
+  "0033330",
+];
+
+/** Draw the hand emblem centred on (cx, cy). size 1 → 5×7 compact version, 2 → 7×9. */
+export function handEmblem(c: PixelCanvas, cx: number, cy: number, size: 1 | 2) {
+  const skin = "#f2c9a0";
+  const shadeCol = "#d9a77a";
+  const ol = "#6b3f22";
+  if (size === 1) {
+    const small = ["01010", "11111", "11111", "11112", "01110"];
+    small.forEach((row, j) => [...row].forEach((v, i) => v !== "0" && c.px(cx - 2 + i, cy - 2 + j, v === "2" ? shadeCol : skin)));
+    c.px(cx - 3, cy, skin); // thumb
+    return;
+  }
+  HAND.forEach((row, j) =>
+    [...row].forEach((v, i) => {
+      if (v === "0") return;
+      c.px(cx - 3 + i, cy - 4 + j, v === "1" ? skin : v === "2" ? shadeCol : ol);
+    }),
+  );
+  c.px(cx - 4, cy, ol); // thumb
+  c.px(cx - 4, cy + 1, skin);
+  c.px(cx - 5, cy + 1, ol);
+}
+
 /** Orange / white / green bands for a flag of height h. */
 export function tri(j: number, h: number) {
   return j < h / 3 ? PAL.flagOrange : j < (2 * h) / 3 ? PAL.flagWhite : PAL.flagGreen;
@@ -282,18 +317,8 @@ function flag(c: PixelCanvas, poleX: number, topY: number, wave: number, w = 14,
   }
   const ex = poleX + 1 + Math.floor(w / 2);
   const ey = topY + Math.floor(h / 2) + Math.round(Math.sin(Math.PI * 0.75 + wave));
-  // spinning top (bongaram) emblem – red body, gold band, brown tip, string loop.
-  // Deliberately NOT a wheel/chakra so the party flag can't be mistaken for the national flag.
-  const big = h >= 12;
-  const r = big ? 3 : 2;
-  c.hline(ex - 1, ex + 1, ey - r - 1, "#5a3a1a"); // handle
-  for (let k = -r; k <= r; k++) {
-    const half = r - Math.abs(k) + (k < 0 ? 1 : 0);
-    c.hline(ex - half, ex + half, ey + k, k === 0 ? "#ffd34d" : "#c62828");
-  }
-  c.px(ex, ey + r + 1, "#5a3a1a"); // tip
-  c.px(ex + r + 1, ey - r, "#5a3a1a"); // string
-  c.px(ex + r + 2, ey - r + 1, "#5a3a1a");
+  // raised open-palm hand ✋ emblem (no blue, no wheel) so the flag can't be mistaken for the national flag
+  handEmblem(c, ex, ey, h >= 12 ? 2 : 1);
   c.vline(poleX, topY - 1, topY + h + 22, PAL.pole);
   c.px(poleX, topY - 2, PAL.button);
 }

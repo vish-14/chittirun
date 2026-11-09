@@ -28,6 +28,25 @@ export const VICTORY_LINES = [
   "Kummesaru! Approval rating meter overflow ayyindi!",
 ];
 
+/** What the (fictional) public asks the CM when he runs into the city's problems. */
+const QUESTIONS: Partial<Record<string, string[]>> = {
+  pothole: ["“CM garu, ee pothole eppudu fill chestaru?”", "“Road aa, swimming pool aa?”", "“Pothole count > vote count!”"],
+  puddle: ["“Varsham padithe chaalu, road lo boat kavali!”", "“Drainage ekkada sir?”", "“Waterlogging ki solution undha?”"],
+  jam: ["“2 km ki 2 gantalu – idhi development aa?”", "“Signal panichesthunda asalu?”", "“Traffic jam lo pelli miss ayyindi!”"],
+  auto: ["“Meter vesthara leda?”"],
+  bus: ["“Bus eppudu time ki vasthundi?”"],
+  tanker: ["“Tap lo neellu eppudu?”", "“Tanker ki ₹2000 aa?!”"],
+  cables: ["“Ee wires ki owner evaru?”"],
+  speedBreaker: ["“Speed breaker aa, mountain aa?”"],
+  fileStack: ["“Na file eppudu sign avthundi?”"],
+  redTape: ["“Red tape cut cheyyandi sir!”"],
+};
+
+export function publicQuestion(kind: string): string | null {
+  const pool = QUESTIONS[kind];
+  return pool ? pool[Math.floor(Math.random() * pool.length)] : null;
+}
+
 export function pickLine(reason: EndReason | null, seed: number): string {
   const pool =
     reason === "noConfidence" || reason === "powerZero"

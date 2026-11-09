@@ -245,7 +245,82 @@ function footballKids(c: PixelCanvas) {
   c.hline(0, 37, 20, "#8a7a5a");
 }
 
+// ───────────────────────────── HYDRA demolition drive ─────────────────────────────
+
+function house(c: PixelCanvas) {
+  // a family's two-storey home with a balcony, washing line and a water drum
+  c.rect(4, 14, 44, 42, "#e8a87c");
+  c.rect(4, 14, 44, 3, "#f3c49c");
+  c.rect(2, 10, 48, 5, "#b5543a");
+  c.rect(8, 22, 10, 9, "#5a7fa8");
+  c.rect(34, 22, 10, 9, "#5a7fa8");
+  c.rect(6, 33, 40, 2, "#7a4a22"); // balcony
+  for (let i = 8; i < 46; i += 3) c.vline(i, 30, 33, "#7a4a22");
+  c.rect(20, 40, 12, 16, "#7a4a22"); // door
+  c.px(29, 48, "#ffd34d");
+  c.rect(10, 42, 7, 7, "#5a7fa8");
+  c.rect(36, 42, 7, 7, "#5a7fa8");
+  c.rect(38, 2, 8, 8, "#2a2a2a"); // water drum
+  c.hline(6, 30, 37, "#555");
+  ["#e94b3c", "#3f7fd9", "#f6c445"].forEach((col, i) => c.rect(9 + i * 7, 37, 4, 4, col)); // washing line
+}
+
+function rubble(c: PixelCanvas) {
+  const cols = ["#c98b5a", "#8a7a6a", "#e8a87c", "#6b5a4a", "#b5543a"];
+  for (let i = 0; i < 40; i++) {
+    const x = 4 + ((i * 37) % 44);
+    const y = 34 + ((i * 13) % 20);
+    c.rect(x, y, 3 + (i % 4), 2 + (i % 3), cols[i % cols.length]);
+  }
+  c.line(10, 50, 22, 40, "#7a4a22", 2); // broken beam
+  c.line(30, 52, 44, 44, "#7a4a22", 2);
+  c.rect(20, 46, 6, 6, "#5a7fa8"); // window frame in the debris
+}
+
+function hydraVan(c: PixelCanvas) {
+  c.rect(2, 8, 52, 16, "#f5f5f5");
+  c.rect(40, 4, 14, 12, "#f5f5f5"); // cab
+  c.rect(43, 6, 9, 6, "#8fc8de");
+  c.rect(2, 14, 52, 4, "#2b6cd4");
+  text(c, 7, 9, "HYDRA", "#2b6cd4");
+  c.rect(16, 2, 8, 4, "#e23b2e"); // siren bar
+  c.rect(24, 2, 6, 4, "#2b6cd4");
+  c.ellipse(12, 25, 4, 4, "#222");
+  c.ellipse(44, 25, 4, 4, "#222");
+  c.ellipse(12, 25, 1.5, 1.5, "#888");
+  c.ellipse(44, 25, 1.5, 1.5, "#888");
+}
+
+function demoJcb(c: PixelCanvas, arm: number) {
+  c.rect(4, 24, 30, 12, "#f5d01b");
+  c.rect(4, 24, 30, 2, "#fff38a");
+  c.rect(8, 12, 14, 13, "#f5d01b");
+  c.rect(10, 14, 10, 7, "#8fc8de");
+  text(c, 6, 27, "JCB", "#1b1020");
+  for (let i = 0; i < 5; i++) c.rect(3 + i * 7, 36, 6, 6, "#2a2a2a");
+  c.rect(2, 35, 34, 2, "#444");
+  // boom + dipper + bucket, raised (arm=0) or smashing down (arm=1)
+  const ex = arm ? 50 : 46;
+  const ey = arm ? 30 : 6;
+  c.line(30, 26, 40, arm ? 14 : 6, "#d8b40e", 4);
+  c.line(40, arm ? 14 : 6, ex, ey, "#d8b40e", 3);
+  c.poly([[ex - 3, ey], [ex + 4, ey - 2], [ex + 5, ey + 6], [ex - 2, ey + 5]], "#666");
+}
+
+function stayOrder(c: PixelCanvas) {
+  // red octagonal STOP sign = the CM's stay order
+  c.poly([[5, 0], [11, 0], [16, 5], [16, 11], [11, 16], [5, 16], [0, 11], [0, 5]], "#ffffff");
+  c.poly([[5, 1], [11, 1], [15, 5], [15, 11], [11, 15], [5, 15], [1, 11], [1, 5]], "#d42a2a");
+  text(c, 1, 6, "STOP", "#ffffff");
+}
+
 const ROADSIDE: Record<string, [number, number, (c: PixelCanvas) => void]> = {
+  "dm-house": [52, 56, house],
+  "dm-rubble": [52, 56, rubble],
+  "dm-van": [56, 30, hydraVan],
+  "dm-jcb-0": [56, 42, (c) => demoJcb(c, 0)],
+  "dm-jcb-1": [56, 42, (c) => demoJcb(c, 1)],
+  "tk-stayOrder": [17, 17, stayOrder],
   "rs-paan": [44, 44, (c) => paanShop(c, "PAAN", "#c62828", "#2f8a3f")],
   "rs-paan2": [44, 44, (c) => paanShop(c, "MEETHA PAAN", "#1d3f8f", "#c9772f")],
   "rs-mall": [72, 64, mall],
