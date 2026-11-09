@@ -783,7 +783,7 @@ export class RunScene extends Phaser.Scene {
     if (lvl !== "traffic" && lvl !== "water") return;
     if (!this.train) {
       // runs on the viaduct deck drawn in the near layer (traffic) / above the skyline (water)
-      const deckY = lvl === "traffic" ? HORIZON - 33 : HORIZON - 40;
+      const deckY = HORIZON - 33; // sits on the viaduct deck drawn in the near layer
       this.train = this.add.image(-300, deckY, "props", "fx-metro-train").setOrigin(0, 1).setScale(1.2).setDepth(-79);
       this.train.setData("dir", 1);
     }

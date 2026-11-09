@@ -255,6 +255,11 @@ function near(level: LevelId): PixelCanvas {
       break;
     }
     case "water": {
+      // Hitech City metro: elevated viaduct deck + pillars behind the buildings (train runs on top)
+      c.rect(0, 18, W, 8, shade(base, 0.1));
+      c.rect(0, 18, W, 2, shade(base, 0.3));
+      c.rect(0, 26, W, 2, shade(base, -0.3));
+      for (let px = 14; px < W; px += 48) c.rect(px, 28, 8, H - 28, shade(base, -0.1));
       let x = 0;
       while (x < W) {
         const w = rng.int(22, 34);
