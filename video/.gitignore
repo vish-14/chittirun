@@ -1,0 +1,7 @@
+trailer/assets/
+trailer/.hyperframes/
+rec/
+*.mp4
+*.webm
+*.mp3
+*.wav
